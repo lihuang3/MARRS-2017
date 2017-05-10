@@ -6,7 +6,7 @@ mapname = {'figT','figStdMap','figVB', 'maze','maze1'};
 scale = {1, 0.5, 1, 1, 1};
 %goalloc = {[245,273],[331,333],[297,169]};
 
-goalloc = {[245,273],[49,49],[297,169],[615, 620],[490 308]};
+goalloc = {[280,327],[331,333],[297,169],[615, 620],[490 308]};
 dist_threshold = {[35 35],[35 35], [15 15],[15 15], [12 12]};
 max_step = {25, 10, 10, 10, 8};
 mission_increment = {1/2, 1/2, 1/3, 1/3, 1/3};
@@ -42,7 +42,10 @@ end
 fprintf('Map %s is chosen.\n', testmap);
 output = TestObj(maps{temp});
 
-
+filename = strcat(maps{temp,1}.name,'_output.mat');
+fprintf('Writing data to %s ... \n',filename)
+save(filename,'output')
+fprintf('Data saved!\n')
 
 
 

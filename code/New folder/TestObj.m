@@ -70,15 +70,16 @@ classdef TestObj < handle
            f2.CData = [0 0 1];
            
            
-           %% Preprocessing part I
-           
-           this.MapProcess1;
-           this.MapProcess2;
-           this.MapProcess3;
-           this.MapProcess4;
-           this.MapProcess5;
-           this.MapProcess6;
-            
+           %% Part I: Map Preprocessing
+           MapProcess1(this);
+           MapProcess2(this);
+           MapProcess3(this);
+           MapProcess4(this);
+           %% Part II: Tracjetory Vectors Generation
+           MapProcess5(this);
+           MapProcess6(this);
+           %% Part III: Map Evaluation
+           this.MapEvaluation; 
        end
        
        %% Assign cost (from the goal)to nodes
@@ -125,7 +126,6 @@ classdef TestObj < handle
             end
        end
           
-       
        %% Eliminate Fake End Pts
        function MapProcess2(this)
              % Make sure the pts with the largest cost are end pts 
@@ -162,7 +162,7 @@ classdef TestObj < handle
                     temp = temp1;                               % Intermediate pt for BFS search
                     cost1 = this.Pathway(temp1(1),temp1(2));    % This end point cost
                     cost = cost1;
-                    
+                    tempRcd = temp;
                     while (cost1-cost < this.BEdist) && cost > 100
                         
                         % Extract the neighbors around the intermediate pt
@@ -185,7 +185,7 @@ classdef TestObj < handle
                                row = row-2;
                                col = col-2;
                                temp = [row(1)+temp(1),col(1)+temp(2)];     % Update the intermediate pt
-
+                               tempRcd = [tempRcd;temp];
                             else
                                % The branch pt is within the threshold distance, and it
                                % will be regarded as an end pt.    
@@ -193,13 +193,19 @@ classdef TestObj < handle
                                this.Brch0(temp(1),temp(2))=0;
                                this.Ed0(temp(1),temp(2))=1;
                                this.Ed0(temp1(1),temp1(2))=0;
-
+                               for i_tempRcd = 1:size(tempRcd,1)
+                                    this.Skel(tempRcd(i_tempRcd,1),tempRcd(i_tempRcd,2)) = 0;
+                                    this.Pathway(tempRcd(i_tempRcd,1),tempRcd(i_tempRcd,2)) = 0;
+                               end
+                               
+                               break;
                             end
                         else
                             [row, col] = find(nb==cost-1);
                             row = row-2;
                             col = col-2;
                             temp = [row(1)+temp(1),col(1)+temp(2)];     % Update the intermediate pt
+                            tempRcd = [tempRcd;temp];
                         end
                         
                         cost = this.Pathway(temp(1),temp(2));       % Intermediate pt cost
@@ -266,8 +272,7 @@ classdef TestObj < handle
             
             
        end
-       
-       
+        
        %% Eliminate Fake Branch Pts
        function MapProcess3(this)
                 
@@ -346,8 +351,7 @@ classdef TestObj < handle
             end
 
        end
-      
-       
+            
        %% Pair junction (branch pts) with end pts
        function MapProcess4(this)
            % Note this.track will change row size later.
@@ -362,9 +366,9 @@ classdef TestObj < handle
            % The j-th col indicates a trajectory (by tracjectory vectors)
            % from j-th branch pt (sorted by cost-to-go ('descend')) to the next branch pt (junction)
            % Compared to a col in this.track, a col in this.trackL only contains 1 traj. 
-           this.trackL = this.track;
+           this.trackL = zeros(1,2*size(this.BrchPts0,1));
            
-           this.rtrack = this.track;
+           this.rtrack = this.trackL;
            
             % Sort the region by cost-to-go from the branch pts
            [this.RegionVal, this.RegionID] = sort(diag(this.Pathway(this.BrchPts0(:,1),this.BrchPts0(:,2))),'Descend');
@@ -645,7 +649,7 @@ classdef TestObj < handle
                             % Update the target-motion Demo
                             h.XData = temp(2);
                             h.YData = temp(1);
-                            pause(0.005);
+                            pause(0.001);
                         end
                         % If we have reached a junction before,
                         % mission_flag>0, we keep going for
@@ -686,6 +690,8 @@ classdef TestObj < handle
                 end
 
             end
+            
+            this.trackL(end+1,:) = 0;
        end
       
        %% Trajectory Stats    
@@ -707,7 +713,7 @@ classdef TestObj < handle
 
                this.rtrack(1,2*ii-1:2*ii) = mean(this.trackL(jj:jj+2,2*ii-1:2*ii));
                flag1 = 0;
-               intit = jj;
+               init = jj;
                while ~flag1
                   temp = this.trackL(jj,2*ii-1);  
                   if abs(temp-this.rtrack(1,2*ii-1))<= thrhd && this.trackL(jj,2*ii)>0
@@ -716,14 +722,64 @@ classdef TestObj < handle
                       flag1 = 1;
                   end
                end
-               this.rtrack(2,2*ii-1) = jj-intit+1;
-               this.rtrack(2,2*ii) = sum(this.trackL(intit:jj,2*ii));
+               this.rtrack(2,2*ii-1) = jj-init+1;
+               this.rtrack(2,2*ii) = sum(this.trackL(init:jj,2*ii));
 
             end
        
        end
        
-       
+       function MapEvaluation(this)
+%            tar = [];
+%            while isempty(tar)
+%                row = randi(size(this.Skel,1));
+%                col = randi(size(this.Skel,2));
+%               if this.Skel(row,col) == 1 
+%                     tar = [row,col];
+%               end
+%            end           
+%            this.localtrails = zeros(50,4);
+%            
+%            frtr = tar;
+%            range = 3*this.max_step;
+%            cur_range = 0;
+%            while cur_range < range
+%                  
+%                     % Extract a 3x3 neighbor of the current frontier node from 'Pathway'  
+%                     nb = this.Skel(-1+frtr(1,1):1+frtr(1,1),-1+frtr(1,2):1+frtr(1,2));     
+%                     [row, col] = find(nb==1);      % Search for unexplored neighbor pts that belongs to medial-axie skeleton map          
+%                     row = row-2;
+%                     col = col-2;
+% 
+%                     if numel(row)>0
+%                         % Assign cost value to the new frontier
+%                         this.Pathway(-1+frtr(1,1):1+frtr(1,1),-1+frtr(1,2):1+frtr(1,2))=...
+%                             -this.Pathway(-1+frtr(1,1):1+frtr(1,1),-1+frtr(1,2):1+frtr(1,2)).*uint16(blkdiag(0,1,0))+...
+%                             uint16(nb ==1).*this.Pathway(frtr(1,1),frtr(1,2))...
+%                             +this.Pathway(-1+frtr(1,1):1+frtr(1,1),-1+frtr(1,2):1+frtr(1,2));
+% 
+%                         cost = cost +1;
+%                         % Add new frontier nodes to the var 'frtr'
+%                         for ij = 1:numel(row)       
+%                             frtr = [frtr; row(ij)+frtr(1,1), col(ij)+frtr(1,2)];     
+%                         end
+%                     else
+%                         % sdEdPts stands for pseudo end pts, which is not an
+%                         % actual end pts, but a pts where you can get to the
+%                         % goal with more than one path at the same cost
+%                         if this.Ed(frtr(1,1),frtr(1,2))==0
+%                             this.sdEdPts = [this.sdEdPts;frtr(1,1:2)]; 
+%                         end
+%                     end
+%                     % The current node is no more at the frontier
+%                     frtr(1,:) = []; 
+%                 
+%                
+%                
+%            end
+%            
+%            
+       end
    end
    
 end
