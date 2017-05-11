@@ -26,6 +26,14 @@ classdef TestObj < handle
       RegionVal
       trackL
       rtrack
+      localmap
+      localPts
+      localPathway
+      tar
+      tar_brch
+      tar_brch_ID
+      local_track
+      distbt
    end
    
    methods
@@ -78,8 +86,10 @@ classdef TestObj < handle
            %% Part II: Tracjetory Vectors Generation
            MapProcess5(this);
            MapProcess6(this);
-           %% Part III: Map Evaluation
-           this.MapEvaluation; 
+           %% Part III: Local Map Evaluation
+           LocalMapProc1(this);
+           LocalMapProc2(this);
+%            LocalMapProc3(this);
        end
        
        %% Assign cost (from the goal)to nodes
@@ -566,8 +576,8 @@ classdef TestObj < handle
             hold on
             temp1 = this.ConnMat(1,2*1:2*1+1);
             % Initialization of target-motion Demo
-            h = scatter(temp1(2),temp1(1),80,'filled');
-            h.CData = [1 0 0];
+%             h = scatter(temp1(2),temp1(1),80,'filled');
+%             h.CData = [1 0 0];
 
             % Loop all the branch pts (junctions)
             for jj = 1:size(this.ConnMat,1)
@@ -647,9 +657,9 @@ classdef TestObj < handle
                             end
                             cost = this.Pathway(temp(1),temp(2));
                             % Update the target-motion Demo
-                            h.XData = temp(2);
-                            h.YData = temp(1);
-                            pause(0.001);
+%                             h.XData = temp(2);
+%                             h.YData = temp(1);
+%                             pause(0.001);
                         end
                         % If we have reached a junction before,
                         % mission_flag>0, we keep going for
@@ -729,57 +739,205 @@ classdef TestObj < handle
        
        end
        
-       function MapEvaluation(this)
-%            tar = [];
-%            while isempty(tar)
-%                row = randi(size(this.Skel,1));
-%                col = randi(size(this.Skel,2));
-%               if this.Skel(row,col) == 1 
-%                     tar = [row,col];
-%               end
-%            end           
-%            this.localtrails = zeros(50,4);
-%            
-%            frtr = tar;
-%            range = 3*this.max_step;
-%            cur_range = 0;
-%            while cur_range < range
-%                  
-%                     % Extract a 3x3 neighbor of the current frontier node from 'Pathway'  
-%                     nb = this.Skel(-1+frtr(1,1):1+frtr(1,1),-1+frtr(1,2):1+frtr(1,2));     
-%                     [row, col] = find(nb==1);      % Search for unexplored neighbor pts that belongs to medial-axie skeleton map          
-%                     row = row-2;
-%                     col = col-2;
-% 
-%                     if numel(row)>0
-%                         % Assign cost value to the new frontier
-%                         this.Pathway(-1+frtr(1,1):1+frtr(1,1),-1+frtr(1,2):1+frtr(1,2))=...
-%                             -this.Pathway(-1+frtr(1,1):1+frtr(1,1),-1+frtr(1,2):1+frtr(1,2)).*uint16(blkdiag(0,1,0))+...
-%                             uint16(nb ==1).*this.Pathway(frtr(1,1),frtr(1,2))...
-%                             +this.Pathway(-1+frtr(1,1):1+frtr(1,1),-1+frtr(1,2):1+frtr(1,2));
-% 
-%                         cost = cost +1;
-%                         % Add new frontier nodes to the var 'frtr'
-%                         for ij = 1:numel(row)       
-%                             frtr = [frtr; row(ij)+frtr(1,1), col(ij)+frtr(1,2)];     
-%                         end
-%                     else
-%                         % sdEdPts stands for pseudo end pts, which is not an
-%                         % actual end pts, but a pts where you can get to the
-%                         % goal with more than one path at the same cost
-%                         if this.Ed(frtr(1,1),frtr(1,2))==0
-%                             this.sdEdPts = [this.sdEdPts;frtr(1,1:2)]; 
-%                         end
-%                     end
-%                     % The current node is no more at the frontier
-%                     frtr(1,:) = []; 
-%                 
-%                
-%                
-%            end
-%            
-%            
+       function LocalMapProc1(this)
+         
+           
+           this.tar_brch = [];
+           while isempty(this.tar_brch)
+                this.tar_brch_ID = randi(size(this.BrchPts0,1));
+                this.tar_brch = this.BrchPts0(this.RegionID(this.tar_brch_ID),1:2);
+                if (this.tar_brch == this.goal) == [1, 1]
+                    tthis.ar_brch = [];
+                end
+           end
+           
+           this.localmap = this.Skel.*0;
+           this.localmap(this.tar_brch(1),this.tar_brch(2)) = 1;
+           
+           % Loop all end pts of the targeted region tar_brch 
+           % plus the branch pt (junction node)
+           for ii = 1:this.ConnMat(this.RegionID(this.tar_brch_ID),1)+1  
+                    if ii == this.ConnMat(this.RegionID(this.tar_brch_ID),1)+1
+                        % select the branch pt (the junction)
+                        temp = this.BrchPts0(this.RegionID(this.tar_brch_ID),1:2);
+                    else
+                        % select an end pt
+                        temp = this.ConnMat(this.RegionID(this.tar_brch_ID),2*ii:2*ii+1);       % Pick an end point
+                    end
+                    cost = this.Pathway(temp(1),temp(2));                             % This end point cost
+                    this.localmap(temp(1),temp(2)) = 1;
+                    
+                    while cost >100
+                        
+                        % Extract the neighbors around the intermediate pt
+                        % from the cost map 'Pathway'
+                        nb = this.Pathway(-1+temp(1):1+temp(1),-1+temp(2):1+temp(2));
+                        nb(2,2)=0;
+                        
+                        % Extract the neighbors around the intermediate pt
+                        % from the Branch map 'Brch'
+                        nb0 = this.Brch0(-1+temp(1):1+temp(1),-1+temp(2):1+temp(2));
+                        nb0(2,2)=0;
+                        
+                        % Search for branch pts
+                        if ~isempty(find(nb0==1,1))
+                            [row, col] = find(nb0==1);
+                            row = row-2;
+                            col = col-2;
+                            if this.Pathway(row(1)+temp(1),col(1)+temp(2)) > cost
+                               [row, col] = find(nb==cost-1);
+                               row = row-2;
+                               col = col-2;
+                               temp = [row(1)+temp(1),col(1)+temp(2)];     % Update the intermediate pt
+
+                            else
+                               % The branch pt is within the threshold distance, and it
+                               % will be regarded as an end pt.    
+                               temp = [row(1)+temp(1),col(1)+temp(2)];     % Update the intermediate pt
+                               this.localmap(temp(1),temp(2))=1;
+                               break;
+
+                            end
+                        else
+                            [row, col] = find(nb==cost-1);
+                            row = row-2;
+                            col = col-2;
+                            temp = [row(1)+temp(1),col(1)+temp(2)];     % Update the intermediate pt
+                        end
+                        this.localmap(temp(1),temp(2))=1;
+                        cost = this.Pathway(temp(1),temp(2));       % Intermediate pt cost
+                        
+                   end               
+           
+           end
+           
+           [row, col] = find(this.localmap==1);
+           this.localPts = [row, col];
+           this.tar = this.localPts(randi(size(this.localPts,1)),1:2);
+           cost = 1e2;
+           this.localPathway = uint16(this.localmap);
+           this.localPathway(this.tar(1),this.tar(2)) = cost;
+           
+           % Frontier Node
+           frtr = this.tar;
+           while ~isempty(frtr)
+                 
+                    % Extract a 3x3 neighbor of the current frontier node from 'Pathway'  
+                    nb = this.localPathway(-1+frtr(1,1):1+frtr(1,1),-1+frtr(1,2):1+frtr(1,2));     
+                    [row, col] = find(nb==1);      % Search for unexplored neighbor pts that belongs to medial-axie skeleton map          
+                    row = row-2;
+                    col = col-2;
+
+                    if numel(row)>0
+                        % Assign cost value to the new frontier
+                        this.localPathway(-1+frtr(1,1):1+frtr(1,1),-1+frtr(1,2):1+frtr(1,2))=...
+                            -this.localPathway(-1+frtr(1,1):1+frtr(1,1),-1+frtr(1,2):1+frtr(1,2)).*uint16(blkdiag(0,1,0))+...
+                            uint16(nb ==1).*this.localPathway(frtr(1,1),frtr(1,2))...
+                            +this.localPathway(-1+frtr(1,1):1+frtr(1,1),-1+frtr(1,2):1+frtr(1,2));
+
+                        cost = cost +1;
+                        % Add new frontier nodes to the var 'frtr'
+                        for ij = 1:numel(row)       
+                            frtr = [frtr; row(ij)+frtr(1,1), col(ij)+frtr(1,2)];     
+                        end
+                    end
+                    % The current node is no more at the frontier
+                    frtr(1,:) = []; 
+                
+               
+               
+           end
+           
+           
        end
+       
+       function LocalMapProc2(this)
+            this.distbt = zeros(this.ConnMat(this.RegionID(this.tar_brch_ID),1),5);
+           
+            figure             
+            
+            imshow(~(this.localmap+~this.BW));
+            hold on
+            scatter(this.tar(2),this.tar(1),100,'filled','p');
+            temp1 = this.ConnMat(this.RegionID(this.tar_brch_ID),2:3);
+            temp = temp1;
+            % Initialization of target-motion Demo
+            hlc = scatter(temp(2),temp(1),35,'filled');
+            hlc.CData = [0 1 0];
+
+            % Loop all the end pts/branch pts connecting to the current
+            % branch pt (junction)
+            for ii =1:this.ConnMat(this.RegionID(this.tar_brch_ID),1)
+                % Start from the selected end/branch pt and head the
+                % junction.
+                kk = 1;
+                temp1 = this.ConnMat(this.RegionID(this.tar_brch_ID),2*ii:2*ii+1);
+                this.distbt(ii,3) = this.localPathway(temp1(1),temp1(2))-100;
+                this.distbt(ii,4) = this.Pathway(temp1(1),temp1(2))-this.Pathway(this.tar(1),this.tar(2));
+                this.distbt(ii,1:2) = temp1;
+                temp = temp1;
+                cost1 = this.localPathway(temp1(1),temp1(2));
+                cost = cost1;
+
+               
+                % mission_flag is an indicator for the trail
+                % exploration. Starting from a end pt/branch pt towards
+                % the junction, if we reach the junction, mission_flag
+                % = mission_flag + mission_increment (now
+                % mission_flag<1), and we keep going for (1/mission_increment-1)*max_step 
+                % before we stop, because we need to send the robot
+                % into the next region instead of stopping at the
+                % junction
+                while cost > 100
+                    temp1 = temp;
+                    cost1 = cost;                         
+                    % While the trajectory vector (from temp1 to temp)
+                    % is less this.max_step
+                    while cost1-cost < this.max_step
+                        % Extract the 3*3 neighborhood of the current location "temp" in "Pathway"
+                        nb = this.localPathway(-1+temp(1):1+temp(1),-1+temp(2):1+temp(2));
+                        cost = this.localPathway(temp(1),temp(2));
+
+                        % If there's a branch pt (junction) around
+                        if ~isempty(find(cost==100,1)) 
+                            break;
+                        else
+                            % else we use gradient descent to look for
+                            % the next node
+                            [row, col] = find(nb==cost-1);
+                            row = row-2;
+                            col = col-2;
+                            temp = [row(1)+temp(1),col(1)+temp(2)];
+                        end
+                        cost = this.localPathway(temp(1),temp(2));
+                        
+                        % Update the target-motion Demo
+%                             h.XData = temp(2);
+%                             h.YData = temp(1);
+%                             pause(0.001);
+                    end
+                    hlc.XData = temp(2);
+                    hlc.YData = temp(1);
+                    pause(0.2)
+                    % calculate the trajectory vector orientation
+                    angle = atan2(double(temp(1)-temp1(1)),double(temp(2)-temp1(2)));
+
+                    if cost1 - cost > 0
+                        % Update trajectory vectors with its orientation and length 
+                        this.local_track(kk,2*ii-1:2*ii) = [angle, double(cost1-cost)];
+                        kk = kk+1;
+                    end
+                end
+
+
+
+            end
+
+
+            this.distbt(:,5) = this.distbt(:,3)==this.distbt(:,4);
+            this.trackL(end+1,:) = 0;
+       end
+       
    end
    
 end
