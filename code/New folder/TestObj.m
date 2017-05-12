@@ -34,6 +34,7 @@ classdef TestObj < handle
       tar_brch_ID
       local_track
       distbt
+      localmpath
    end
    
    methods
@@ -879,15 +880,6 @@ classdef TestObj < handle
                 cost1 = this.localPathway(temp1(1),temp1(2));
                 cost = cost1;
 
-               
-                % mission_flag is an indicator for the trail
-                % exploration. Starting from a end pt/branch pt towards
-                % the junction, if we reach the junction, mission_flag
-                % = mission_flag + mission_increment (now
-                % mission_flag<1), and we keep going for (1/mission_increment-1)*max_step 
-                % before we stop, because we need to send the robot
-                % into the next region instead of stopping at the
-                % junction
                 while cost > 100
                     temp1 = temp;
                     cost1 = cost;                         
@@ -910,11 +902,7 @@ classdef TestObj < handle
                             temp = [row(1)+temp(1),col(1)+temp(2)];
                         end
                         cost = this.localPathway(temp(1),temp(2));
-                        
-                        % Update the target-motion Demo
-%                             h.XData = temp(2);
-%                             h.YData = temp(1);
-%                             pause(0.001);
+
                     end
                     hlc.XData = temp(2);
                     hlc.YData = temp(1);
@@ -928,16 +916,74 @@ classdef TestObj < handle
                         kk = kk+1;
                     end
                 end
-
-
-
             end
 
-
             this.distbt(:,5) = this.distbt(:,3)==this.distbt(:,4);
-            this.trackL(end+1,:) = 0;
+            this.local_track(end+1,:) = 0;
        end
        
+       function LocalMapProc3(this)
+          this.localmpath = zeros(2,2);
+          % Find the branch the target loc is in 
+          this.localmpath(1,1) = find(this.distbt(:,5)==1);
+          % problem: tar at different loc.
+          
+          
+          
+          % Check the branch depth from the end pt to the tar
+          this.localmpath(1,2) = find(this.local_track(:,2*this.localmpath(1,1))==0)-1;
+          if this.localmpath(1,2) <=3 
+                this.localmpath(2,1) = mean(this.local_track(1:this.localmpath(1,2),2*this.localmpath(1,1)-1));
+                this.localmpath(2,2) = sum(this.local_track(1:this.localmpath(1,2),2*this.localmpath(1,1)));
+          else
+                this.localmpath(2,1) = mean(this.local_track(this.localmpath(1,2)-3:this.localmpath(1,2),2*this.localmpath(1,1)-1));
+                this.localmpath(2,2) = sum(this.local_track(this.localmpath(1,2)-3:this.localmpath(1,2),2*this.localmpath(1,1)));
+                jj = this.localmpath(1,2)-1;
+                thrhd = 10/180*pi;
+                flag = 0;
+                while ~flag
+                   temp = this.local_track(jj,2*this.localmpath(1,1)-1:2*this.localmpath(1,1));
+                   if abs(temp-this.localmpath(2,1))<thrhd
+                       this.localmpath(2,2) = this.localmpath(2,2)+temp(2);
+                       jj = jj - 1;
+                       if jj < 1
+                           flag = 1;
+                       end
+                   else
+                       flag = 1;
+                   end
+                    
+                end
+          end
+          
+          CMreact = [];
+          react = [];
+          seq = perms(linspace(1,this.ConnMat(this.tar_brch_ID,1),this.ConnMat(this.tar_brch_ID,1)));
+          for ii = 1:factorial(this.ConnMat(this.tar_brch_ID,1))
+                mm = 2;
+                for jj = 1:this.ConnMat(this.tar_brch_ID,1)
+                    
+                   kk = 1;
+                   ll = seq(ii,jj);
+                   while this.local_track(kk,2*ll) > 0
+                       temp = YC(ii,mm-1)+cur_track(kk,2*ll).*cos(cur_track(kk,2*ll-1)-tar(1));
+                       if temp >tar(3)
+                            temp = tar(3);
+                       end
+                       Y(ii,mm) = temp-YC(ii,mm-1);
+                       YC(ii,mm) = temp;
+                       mm = mm + 1;
+                       kk = kk + 1;
+                   end
+                end
+          end
+
+
+
+           
+       end
+       
+      
    end
    
 end
