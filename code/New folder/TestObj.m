@@ -20,23 +20,28 @@ classdef TestObj < handle
       max_step
       ConnMat
       Pathway
+      Path
       track
       mission_increment
       RegionID
       RegionVal
       trackL
       rtrack
-      localmap
+      localSkel
       localPts
       localPathway
+      localPath
       tar
       tar_brch
       tar_brch_ID
       local_track
       distbt
       localmpath
+      loc
+      freespace
+      medial
    end
-   
+    
    methods
        %% class constructor
        function this = TestObj(map)
@@ -91,15 +96,23 @@ classdef TestObj < handle
            LocalMapProc1(this);
            LocalMapProc2(this);
 %            LocalMapProc3(this);
+           GlobalControl(this);
        end
        
        %% Assign cost (from the goal)to nodes
        function MapProcess1(this)   
             this.Pathway = uint16(this.Skel);                   % 'Pathway' is a cost-to-go value map
-            cost = 1e2;                                         % base cost
-            this.Pathway(this.goal(1),this.goal(2))=cost;       % goal cost
+            temp = this.Skel == 1;
+            
+            this.Path = zeros(sum(temp(:)),6);
+            NodeCnt = 1;
+            parentID = 0;
+
+            this.Pathway(this.goal(1),this.goal(2))=1e2;       % goal cost
             frtr = this.goal;                                   % BFS frontier
             this.sdEdPts = [];
+            this.Path(NodeCnt,1:2) = this.goal;
+            this.Path(NodeCnt,4) = 1e2;
             
             while ~isempty(frtr) 
                 % Extract a 3x3 neighbor of the current frontier node from 'Pathway'  
@@ -114,11 +127,14 @@ classdef TestObj < handle
                         -this.Pathway(-1+frtr(1,1):1+frtr(1,1),-1+frtr(1,2):1+frtr(1,2)).*uint16(blkdiag(0,1,0))+...
                         uint16(nb ==1).*this.Pathway(frtr(1,1),frtr(1,2))...
                         +this.Pathway(-1+frtr(1,1):1+frtr(1,1),-1+frtr(1,2):1+frtr(1,2));
-
-                    cost = cost +1;
+                    parentID = find(this.Path(:,1)==frtr(1,1) & this.Path(:,2)==frtr(1,2));
                     % Add new frontier nodes to the var 'frtr'
                     for ij = 1:numel(row)       
-                        frtr = [frtr; row(ij)+frtr(1,1), col(ij)+frtr(1,2)];     
+                        frtr = [frtr; row(ij)+frtr(1,1), col(ij)+frtr(1,2)];
+                        NodeCnt = NodeCnt +1;
+                        this.Path(NodeCnt,1:2) = frtr(end,1:2);
+                        this.Path(NodeCnt,3) = parentID;
+                        this.Path(NodeCnt,4) = this.Pathway(frtr(1,1),frtr(1,2))+1;
                     end
                 else
                     % sdEdPts stands for pseudo end pts, which is not an
@@ -131,6 +147,7 @@ classdef TestObj < handle
                 % The current node is no more at the frontier
                 frtr(1,:) = []; 
             end
+            
             
             if ~isempty(this.sdEdPts)
                 this.sdEdPts = this.sdEdPts(find(diag(this.Brch(this.sdEdPts(:,1),this.sdEdPts(:,2)))==0),:);
@@ -740,6 +757,7 @@ classdef TestObj < handle
        
        end
        
+       
        function LocalMapProc1(this)
          
            
@@ -752,8 +770,8 @@ classdef TestObj < handle
                 end
            end
            
-           this.localmap = this.Skel.*0;
-           this.localmap(this.tar_brch(1),this.tar_brch(2)) = 1;
+           this.localSkel = this.Skel.*0;
+           this.localSkel(this.tar_brch(1),this.tar_brch(2)) = 1;
            
            % Loop all end pts of the targeted region tar_brch 
            % plus the branch pt (junction node)
@@ -766,7 +784,7 @@ classdef TestObj < handle
                         temp = this.ConnMat(this.RegionID(this.tar_brch_ID),2*ii:2*ii+1);       % Pick an end point
                     end
                     cost = this.Pathway(temp(1),temp(2));                             % This end point cost
-                    this.localmap(temp(1),temp(2)) = 1;
+                    this.localSkel(temp(1),temp(2)) = 1;
                     
                     while cost >100
                         
@@ -795,7 +813,7 @@ classdef TestObj < handle
                                % The branch pt is within the threshold distance, and it
                                % will be regarded as an end pt.    
                                temp = [row(1)+temp(1),col(1)+temp(2)];     % Update the intermediate pt
-                               this.localmap(temp(1),temp(2))=1;
+                               this.localSkel(temp(1),temp(2))=1;
                                break;
 
                             end
@@ -805,20 +823,24 @@ classdef TestObj < handle
                             col = col-2;
                             temp = [row(1)+temp(1),col(1)+temp(2)];     % Update the intermediate pt
                         end
-                        this.localmap(temp(1),temp(2))=1;
+                        this.localSkel(temp(1),temp(2))=1;
                         cost = this.Pathway(temp(1),temp(2));       % Intermediate pt cost
                         
                    end               
            
            end
            
-           [row, col] = find(this.localmap==1);
+           [row, col] = find(this.localSkel==1);
            this.localPts = [row, col];
            this.tar = this.localPts(randi(size(this.localPts,1)),1:2);
            cost = 1e2;
-           this.localPathway = uint16(this.localmap);
+           this.localPathway = uint16(this.localSkel);
+           temp = this.localSkel==1;
+           this.localPath = zeros(sum(temp(:)),4);
            this.localPathway(this.tar(1),this.tar(2)) = cost;
-           
+           NodeCnt = 1;
+           this.localPath(NodeCnt,1:2) = this.tar;
+           this.localPath(NodeCnt,4) = 1e2;
            % Frontier Node
            frtr = this.tar;
            while ~isempty(frtr)
@@ -836,10 +858,15 @@ classdef TestObj < handle
                             uint16(nb ==1).*this.localPathway(frtr(1,1),frtr(1,2))...
                             +this.localPathway(-1+frtr(1,1):1+frtr(1,1),-1+frtr(1,2):1+frtr(1,2));
 
-                        cost = cost +1;
+                        parentID = find(this.localPath(:,1)==frtr(1,1) & this.localPath(:,2)==frtr(1,2));
                         % Add new frontier nodes to the var 'frtr'
                         for ij = 1:numel(row)       
-                            frtr = [frtr; row(ij)+frtr(1,1), col(ij)+frtr(1,2)];     
+                            frtr = [frtr; row(ij)+frtr(1,1), col(ij)+frtr(1,2)];
+                            NodeCnt = NodeCnt + 1;
+                           
+                            this.localPath(NodeCnt,1:2) = frtr(end,1:2);
+                            this.localPath(NodeCnt,3) = parentID;
+                            this.localPath(NodeCnt,4) = this.localPathway(frtr(1,1),frtr(1,2))+1;
                         end
                     end
                     % The current node is no more at the frontier
@@ -857,7 +884,7 @@ classdef TestObj < handle
            
             figure             
             
-            imshow(~(this.localmap+~this.BW));
+            imshow(~(this.localSkel+~this.BW));
             hold on
             scatter(this.tar(2),this.tar(1),100,'filled','p');
             temp1 = this.ConnMat(this.RegionID(this.tar_brch_ID),2:3);
@@ -983,7 +1010,28 @@ classdef TestObj < handle
            
        end
        
-      
+       function GlobalControl(this)
+%             [row, col] =  find(this.BW==1);
+%             this.freespace = [row, col];
+%             this.medial = this.Path(:,1:2);
+%             Idx = knnsearch(this.freespace,this.medial);
+%             
+            temp = this.BrchPts0(this.RegionID,1:2);
+            for ii = 1:length(temp)
+               Idx = find(this.Path(:,1)==temp(ii,1) & this.Path(:,2)==temp(ii,2));
+               this.Path(Idx,5) = 1;
+               this.Path(Idx,6) = ii;
+            end
+            
+            for ii = 1:length(this.Path)
+               if this.Path(ii,5) ==0
+                   this.Path(ii,6) = this.Path(this.Path(ii,3),6);
+               end
+            end
+            
+       end
+       
    end
-   
+
+
 end
