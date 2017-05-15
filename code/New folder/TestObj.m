@@ -101,18 +101,18 @@ classdef TestObj < handle
            MapProcess5(this);
            MapProcess6(this);
            %% Part III: Local Map Evaluation
-           LocalMapProc1(this);
-          
-           
+         
            this.rank0 = 0;
-           [row, col] = find(mod(this.tmpPathway,round(this.channel_width/4))==0);
-           for ii = 1:numel(this.RegionID)
-               this.rank0 = ii;
+           
+           for ii = 2:2%numel(this.RegionID)
                
+               this.rank0 = ii;
+               LocalMapProc1(this);
+               [row, col] = find(mod(this.tmpPathway,round(this.channel_width/3))==0);
                for jj = 1:numel(row)
                    this.col0 = jj;
                    
-                   for kk = 1:10
+                   for kk = 1:1
                         this.row0 = kk+2; 
                         LocalMapProc1(this,jj,ii);
                    end
@@ -788,7 +788,7 @@ classdef TestObj < handle
            this.tar_brch = [];
          
            if nargin < 2
-                this.tar_brch_ID = 1;
+                this.tar_brch_ID = this.rank0;
                 this.tar_brch = this.BrchPts0(this.RegionID(this.tar_brch_ID),1:2);
            else
                this.tar_brch_ID = arg2;
@@ -866,8 +866,6 @@ classdef TestObj < handle
            if nargin < 2 
                 this.tar = localPts(2,1:2);
                 this.basescore = [];
-                this.row0 = 3;
-                this.col0 = 0;
            else
             
                [row, col] = find(mod(this.tmpPathway,round(this.channel_width/4))==0);
@@ -915,9 +913,9 @@ classdef TestObj < handle
                
                
            end
+           
            if nargin < 2
                this.tmpPathway = this.localPathway+1;
-
            end
                GlobalControl(this);
                LocalControl(this);  
@@ -1178,7 +1176,7 @@ classdef TestObj < handle
             for ii = 1:length(this.localfsp)
                 localBW(this.localfsp(ii,1),this.localfsp(ii,2)) = 1;
             end
-            
+
             RGB = double(cat(3, ~localBW, ~localBW, ~localBW));
             RGB(:,:,1) = RGB(:,:,1).*182./255+ double(localBW);
             RGB(:,:,2) = RGB(:,:,2).*228./255+ double(localBW);
@@ -1254,7 +1252,7 @@ classdef TestObj < handle
             end
             
             toc
-            
+            disp(datetime('now'))
             if isempty(this.basescore)
                 this.basescore = nstep;
             else
@@ -1262,6 +1260,8 @@ classdef TestObj < handle
                 this.Expt(2,this.col0,this.rank0) =this.tar(2);
                 this.Expt(this.row0,this.col0,this.rank0) = nstep;
                 assignin('base','Expt',this.Expt)
+                fprintf('Experiment %d, sample %d, region %d \n',this.row0-2,this.col0,this.rank0);
+
             end
             pause(1)
             close all
