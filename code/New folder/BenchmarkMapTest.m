@@ -9,12 +9,14 @@ scale = {1, 0.5, 1, 1, 1};
 goalloc = {[280,327],[331,333],[297,169],[615, 620],[490 308]};
 dist_threshold = {[35 35],[35 35], [15 15],[15 15], [12 12]};
 max_step = {15, 8, 10, 10, 8};
+channel_width = {50, 30,12.5};
 mission_increment = {1/2, 1/2, 1/3, 1/3, 1/3};
-maps = cell(5,1);
-for ii = 1:5
+maps = cell(3,1);
+for ii = 1:3
     maps{ii} = struct('name', mapname(ii), 'goal_loc', goalloc(ii), ...
         'distance_threshold', dist_threshold(ii),'magnification', ...
-        scale(ii),'max_step',max_step(ii),'mission_increment',mission_increment(ii));
+        scale(ii),'max_step',max_step(ii),'mission_increment',...
+        mission_increment(ii),'channel_width',channel_width(ii));
 end
 
 addpath(genpath(pwd));
@@ -40,7 +42,7 @@ while ~exist(testmap)
 end
 
 fprintf('Map %s is chosen.\n', testmap);
-output = TestObj(maps{temp});
+obj = TestObj(maps{temp});
 
 % filename = strcat(maps{temp,1}.name,'_output.mat');
 % fprintf('Writing data to %s ... \n',filename)
