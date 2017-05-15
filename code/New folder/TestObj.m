@@ -30,6 +30,7 @@ classdef TestObj < handle
       rtrack
       localSkel
       localPathway
+      tmpPathway
       localPath
       tar
       tar_brch
@@ -41,6 +42,11 @@ classdef TestObj < handle
       freespace
       localfsp
       medial
+      basescore
+      Expt
+      row0
+      col0
+      rank0
    end
     
    methods
@@ -96,6 +102,22 @@ classdef TestObj < handle
            MapProcess6(this);
            %% Part III: Local Map Evaluation
            LocalMapProc1(this);
+          
+           
+           this.rank0 = 0;
+           [row, col] = find(mod(this.tmpPathway,round(this.channel_width/4))==0);
+           for ii = 1:numel(this.RegionID)
+               this.rank0 = ii;
+               
+               for jj = 1:numel(row)
+                   this.col0 = jj;
+                   
+                   for kk = 1:10
+                        this.row0 = kk+2; 
+                        LocalMapProc1(this,jj,ii);
+                   end
+               end
+           end
 %            LocalMapProc2(this);
 %            LocalMapProc3(this);
 %            GlobalControl(this);
@@ -760,16 +782,17 @@ classdef TestObj < handle
        end
        
        
-       function LocalMapProc1(this)
+       function LocalMapProc1(this,arg1,arg2)
          
            % Pick a random reion
            this.tar_brch = [];
          
-           while isempty(this.tar_brch)
-                this.tar_brch_ID = randi(size(this.BrchPts0,1));
-%                 this.tar_brch_ID = 8;
+           if nargin < 2
+                this.tar_brch_ID = 1;
                 this.tar_brch = this.BrchPts0(this.RegionID(this.tar_brch_ID),1:2);
-
+           else
+               this.tar_brch_ID = arg2;
+               this.tar_brch = this.BrchPts0(this.RegionID(this.tar_brch_ID),1:2);
            end
            
            this.localSkel = this.Skel.*0;
@@ -840,7 +863,16 @@ classdef TestObj < handle
            
            [row, col] = find(this.localSkel==1);
            localPts = [row, col];
-           this.tar = localPts(2,1:2);
+           if nargin < 2 
+                this.tar = localPts(2,1:2);
+                this.basescore = [];
+                this.row0 = 3;
+                this.col0 = 0;
+           else
+            
+               [row, col] = find(mod(this.tmpPathway,round(this.channel_width/4))==0);
+               this.tar = [row(arg1),col(arg1)];
+           end
            cost = 1e2;
            this.localPathway = uint16(this.localSkel);
            temp = this.localSkel==1;
@@ -883,8 +915,14 @@ classdef TestObj < handle
                
                
            end
-           
-           
+           if nargin < 2
+               this.tmpPathway = this.localPathway+1;
+
+           end
+               GlobalControl(this);
+               LocalControl(this);  
+
+
            
        end
        
@@ -1135,7 +1173,7 @@ classdef TestObj < handle
 
             this.loc = zeros(NumRob,2);
             this.loc(:,1:2) = this.localfsp(randi((length(this.localfsp)),NumRob,1),1:2);
-            figure
+            
             localBW = (this.BW & 0);
             for ii = 1:length(this.localfsp)
                 localBW(this.localfsp(ii,1),this.localfsp(ii,2)) = 1;
@@ -1145,24 +1183,26 @@ classdef TestObj < handle
             RGB(:,:,1) = RGB(:,:,1).*182./255+ double(localBW);
             RGB(:,:,2) = RGB(:,:,2).*228./255+ double(localBW);
             RGB(:,:,3) = RGB(:,:,3).*255./255+ double(localBW);
-            imshow(RGB);
-            hold on
-            temp = find(this.localPath(:,4)<=100+0.15*this.channel_width);
+%             figure
+%             imshow(RGB);
+%             hold on
+            temp = find(this.localPath(:,4)<=100+1/3*this.channel_width);
             Idx = knnsearch(this.Path(:,1:2),this.localPath(temp,1:2));
             temp = ismember(this.freespace(:,4),Idx);
             
-            hshadow = scatter(this.freespace(temp,2),this.freespace(temp,1),10,'filled');
-            hshadow.CData = [0.85,0.7,1];
-            htar =scatter(this.tar(1,2),this.tar(:,1),100,'p','filled');
-            htar.CData = [1 0 0];
-            hRob = scatter(this.loc(:,2),this.loc(:,1),3,'filled');
-            hRob.CData = [0 0 0];
+%             hshadow = scatter(this.freespace(temp,2),this.freespace(temp,1),10,'filled');
+%             hshadow.CData = [0.85,0.7,1];
+%             htar =scatter(this.tar(1,2),this.tar(:,1),100,'p','filled');
+%             htar.CData = [1 0 0];
+%             hRob = scatter(this.loc(:,2),this.loc(:,1),3,'filled');
+%             hRob.CData = [0 0 0];
             totalcost = 1e10;
             Idx1 = knnsearch(this.localPath(:,1:2),this.loc);
             findmedial = 0;
             nstep = 0;
-
-            while totalcost > NumRob*(100+0.15*this.channel_width)
+            
+            tic
+            while totalcost > NumRob*(100+1/3*this.channel_width)
                 [~, Idx2] = max(this.localPath(Idx1,4));
                 mov_obj = Idx2;
                 p1 = this.loc(mov_obj,1:2);
@@ -1177,12 +1217,12 @@ classdef TestObj < handle
                     Idx =find(diag(localBW(this.loc(:,1),this.loc(:,2)))==0);
                     this.loc(Idx,:) = prev(Idx,:);
                     p1 = this.loc(mov_obj,1:2);
-                    hRob.XData = this.loc(:,2);
-                    hRob.YData = this.loc(:,1);
+%                     hRob.XData = this.loc(:,2);
+%                     hRob.YData = this.loc(:,1);
                     nstep = nstep + 1;
                     pause(0.00001);
                     Idx1 = knnsearch(this.localPath(:,1:2),this.loc);
-                    totalcost = sum(this.localPath(Idx1,4))
+                    totalcost = sum(this.localPath(Idx1,4));
                     if (p1 == p2)==[1 1]
                         findmedial =1;
                     end
@@ -1198,16 +1238,33 @@ classdef TestObj < handle
                     Idx =find(diag(localBW(this.loc(:,1),this.loc(:,2)))==0);
                     this.loc(Idx,:) = prev(Idx,:);
                     p1 = this.loc(mov_obj,1:2);
-                    hRob.XData = this.loc(:,2);
-                    hRob.YData = this.loc(:,1);
+%                     hRob.XData = this.loc(:,2);
+%                     hRob.YData = this.loc(:,1);
                     pause(0.0001);
                     Idx1 = knnsearch(this.localPath(:,1:2),this.loc);
-                    totalcost = sum(this.localPath(Idx1,4))
-                    nstep = nstep + 1
+                    totalcost = sum(this.localPath(Idx1,4));
+                    nstep = nstep + 1;
                 end
                 Idx1 = knnsearch(this.localPath(:,1:2),this.loc);
-%                 totalcost = sum(this.localPath(Idx1,4))
+                if ~isempty(this.basescore)
+                    if nstep> 10*this.basescore 
+                        break;
+                    end
+                end
             end
+            
+            toc
+            
+            if isempty(this.basescore)
+                this.basescore = nstep;
+            else
+                this.Expt(1,this.col0,this.rank0) =this.tar(1);
+                this.Expt(2,this.col0,this.rank0) =this.tar(2);
+                this.Expt(this.row0,this.col0,this.rank0) = nstep;
+                assignin('base','Expt',this.Expt)
+            end
+            pause(1)
+            close all
        end
        
    end
