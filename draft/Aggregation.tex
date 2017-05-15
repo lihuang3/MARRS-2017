@@ -1,0 +1,342 @@
+\section{Swarm Aggregation}\label{sec:agg}
+This section presents a divide-and-conquer aggregation method with heuristic strategies to improve performance. 
+The motivation behind microrobot swarm aggregation is efficient control strategies for drug delivery in vascular networks. However, a global input with a highly under-actuated swarm system makes it difficult constructing an optimal controller. Pioneering research has proposed different strategies for the aggregation/gathering problem, but most are element-wise algorithms, that is, performing the task in terms of individuals. For example, \cite{mahadev2016collecting} combines two agents each time and tests the efficiency of four heuristics. Our goal is to propose a swarm-level strategy to carry out swarm aggregation, and reduce time complexity compared to element-wise methods.
+
+
+\subsection{Heuristic Aggregation}
+A benchmark heuristic for aggregation is to move one microrobot to the goal, and then move the next agent. 
+Repeat this till all robots gather near the goal location. 
+In this paper, the benchmark heuristic moves the farthest microrobot to the goal.
+
+We present the heuristic aggregation in Alg. \ref{alg:Heuristics}.
+%, and the algorithm convergence is shown in Proposition \ref{prop:conv}. 
+%Alg. \ref{alg:Heuristics} is correct 
+with the following assumptions: (i) the graph $G$ is connected and bounded, and (ii) the goal location is inside a closed region (Def. \ref{def:closeregion}) at a dead end (Def. \ref{def:deadend}).
+ The second assumption is inspired by the concept of discrete system transitions in \cite{bobadilla2011controlling}, where gates are constructed to guide transitions from one region to another. 
+  In practice, the closed region indicates that once microrobots reach this area, it is hard for them to escape, given global inputs driving robots to ${\bf q}^g$. 
+  This is reasonable and essential, because an aggregated swarm may disperse in an open region given a global control signal. In fact, chemotherapy molecules are designed to release from carriers once they reach the region of tumor cells \cite{tiwari2012drug}.    
+
+\begin{algorithm}[h]
+	\begin{algorithmic}[1]
+		\WHILE {$F(n,t) > \sigma$} %  \frac{1}{n}\sum_{i=1}^{n}d\langle {\bf p}^{r_i}_t,{\bf q}^g\rangle
+		\STATE $r_i \leftarrow $ the farthest robot
+		\STATE ${\bf q}^{r_i}_v \leftarrow $ the nearest vertex $\in V$ to $r_i$ 	
+		\STATE ${\bf u}_t \leftarrow$ move  $r_i$ towards ${\bf q}^g$ via ${\bf q}^{r_i}_v $
+		\ENDWHILE
+	\end{algorithmic}
+	\caption{\textit {Heuristic Aggregation}. Input: $\mathcal{T}_{obs} = \{V, V_{obs}, V^*\}$,  initial positions $\{ {\bf p}^{r_i}_{t_0}\}$ of all robots $r_i$. Output: ${\bf u}_t$   }
+	\label{alg:Heuristics}
+\end{algorithm}
+
+
+
+\begin{definition}\label{def:closeregion}
+	{\normalfont (closed region.)} Considering a global input ${\bf u}_t$ that drives all robots to the goal ${\bf q}^g$, a closed region is a positive invariant set $\mathcal{M} \subset G_{free}$, ${\bf q}^g \in \mathcal{M}$.  Given ${\bf u}_t$ and a robot $r_i$, if ${\bf p}^{r_i}_{t_0} \in \mathcal{M}$ at $t_0$, then ${\bf p}^{r_i}_t\in \mathcal{M}$ for all $t>t_0$. $\mathcal{M}$ is bounded, so $\forall\; {\bf p}^{r_i} \in \mathcal{M}, \exists\;c>0$, such that
+	\begin{equation}
+	d\langle {\bf p}^{r_i}, {\bf q}^g \rangle< {c\sigma}, 
+	\end{equation}
+
+\end{definition}
+
+\begin{definition}\label{def:deadend}
+	{\normalfont (dead end.)} A dead end is a set $\mathcal{D}\subset \mathcal{M}, {\bf q}^g \in \mathcal{D}$. $\mathcal{D}$ has the following properties: 
+	\begin{enumerate}
+		\item $\forall {\bf p}^{r_i} \in \mathcal{D}$, $d\langle {\bf p}^{r_i}, {\bf q}^g \rangle< {\sigma}$;
+		\item given that all robots \{$r_i$\} $\in G_{free}$ aggregate inside $\mathcal{M}$ and a global input ${\bf u}_t$ moves robots towards $\mathcal{D}$, if ${\bf p}^{r_i} \in \mathcal{D}$ at $t_0$, then ${\bf p}^{r_i}\in \mathcal{D}$ for all $t>t_0$.   
+	\end{enumerate}
+\end{definition}
+
+%\begin{prop}\label{prop:conv}
+%	{\normalfont (convergence.)} Given $n$ microrobots $\{r_i\}$, a map $G$ of size $m$, and a global input, {\normalfont Alg. \ref{alg:Heuristics}} converges to $\mathcal{D}$ as $t\rightarrow \infty$, that is, $\forall\; t>t_f(n, m)$, $F(n,t) < \sigma$, for some small value $\sigma >0$.      
+%\end{prop}
+%\begin{proof}
+%	%Each time we consider the farthest robot, say $r_i$, move $r_i$ to the goal location ${\bf q}^g$, and then consider the next farthest robot. 
+%	Since the goal location is inside a closed region, after $n$ iterations in Alg. \ref{alg:Heuristics}, we collect all robots in the bounded region $\mathcal{M}$,
+%	\begin{equation}
+%		F(n,t)=\frac{1}{n}\sum_{i=1}^{n}d\langle {\bf p}^{r_i}_t,{\bf q}^g \rangle< c\sigma.
+%	\end{equation}
+%	Then Alg. \ref{alg:Heuristics} drives robots from $\mathcal{M}$ to $\mathcal{D}$ with at most $n$ iterations,
+%	\begin{equation}
+%				F(n,t)=\frac{1}{n}\sum_{i=1}^{n}d\langle {\bf p}^{r_i}_t,{\bf q}^g \rangle< \sigma.
+%	\end{equation}  
+%	Hence, the robot swarm aggregation can be finished in finite time---$O(n)$ iterations, and $G$ is bounded, i.e., Alg. \ref{alg:Heuristics} converges to $\mathcal{D}$ within $t_f(n,m)$ time.
+%\end{proof}
+\subsection{Divide-and-Conquer Aggregation} 
+This method recursively aggregates microrobots into a smaller region that contains the goal. 
+This transformation depends on how we define ``a smaller region". 
+ A proper definition of ``region" reduces aggregation time.   
+Interestingly, if we drive each microrobot all the way to the goal location, the algorithm is transformed into the heuristic aggregation.
+
+The divide-and-conquer technique has two stages. 
+We begin by splitting the aggregation problem into subproblems in smaller regions. 
+Then we recursively perform discrete region transitions of microrobot swarms. 
+
+The first stage ``divide" performs map segmentation of vascular systems like Fig. \ref{fig:maps}. 
+In these maps, vessels are connected by junctions, and most of them are T-junctions. 
+
+\begin{definition}
+	{\normalfont (Region $R_i$.)} We define a partition of a map $G_{free}$ as non-overlapping regions $\{R_i\}_{i = 1,2,\dotsm, N_R}$, such that $\{ R_i\in G_{free}|\bigcup\limits_{i=1}^{N_R}R_i = G_{free}, R_i\cap R_j = \emptyset, \forall i\neq j \}$.
+\end{definition}
+
+\begin{definition}\label{JTnode}
+	{\normalfont (Vessel and junction.)}  Let $Q = \{{\bf q}^*_v  \cup \textit{adj}({\bf q}^*_v )\}$, where  ${\bf q}^*_v \in V^*$ and $\textit{adj}({\bf q}^*_v)$ are adjacent neighbors of ${\bf q}^*_v$ within a range. Fitting an ellipse to elements $\in Q$ in the $X$-$Y$ plane, if the eccentricity $<\delta_e$, for some $\delta_e>0$, then ${\bf q}^*_v$ is a junction node; otherwise, ${\bf q}^*_v$ is a vessel node.
+\end{definition}
+
+As shown in Fig. \ref{fig:StdMap1234}(a), we can separate junction nodes (green dots) from other nodes in straight vessels (orange dots) by their spatial distributions as specified in Def.\ \ref{JTnode}. Generally speaking, a junction is the zone where different branches are joined, so the fitting ellipse of a junction node and its adjacent neighbors is similar to a circle. 
+These junction nodes can determine boundaries between regions. 
+In our implementation, we take the maximal width of local channels as the range of adjacent neighbors.  
+With these definitions, we perform map segmentation using results from obstacle-weighted RRT. 
+This process is presented in Alg.\ \ref{alg:MapSeg}, and illustrated in Fig. \ref{fig:StdMap1234}:
+\begin{enumerate}
+	\item use near-medial-axis configurations ${\bf q}^*_v \in V^*$ to identify junction nodes (lines 1-4);
+	\item partition the set of junction nodes ($V_J$) using Euclidean distance (line 5), and yield $N_R$ junction clusters;
+	\item split free space into $N_R$ regions corresponding to the $N_R$ junction clusters (line 6);
+	\item partition each region into branches $\{B_{j,k}\}_{k=1,2, \dotsm, N_{B_j}}$  by their orientations (lines 7-10), where $B_{j,k}$ is the $k$-th of $N_{B_j}$ branches in $R_j$, $N_{B_j}\le 3$. 
+\end{enumerate}
+
+
+\begin{table}\label{table2}
+	\vspace{1\baselineskip}
+	\begin{tabular}{l}
+		\Xhline{0.8pt}	 
+		\\[-0.8em]
+		\multicolumn{1}{c}{\bf {Variables and functions used in Alg. \ref{alg:MapSeg} }}  \\
+		\\[-1.1em]
+		\hline
+		%	Country Name     or Area Name& ISO ALPHA 2\\
+		%	\hline
+		\\[-0.8em]
+		%		$V_J$ --- the set of junction vertices of $\mathcal{T}$.\\
+		%		\\[-0.5em]
+		$Clustering(V_J,$ `distance') --- partition elements of $V_J$ into junction\\ clusters with the Euclidean distance metric, and returns the \\ centroid of each junction $\{ {\bf q}^d_j \}$.\\
+		\\[-0.5em]
+		$RegionSeg\big(V^*,\{{\bf q}^d_{j}\}\big)$ --- partition elements of $V^*$ into clusters by \\junctions, and returns the region ID: $\psi({\cdot})$. First,  assign a unique \\region ID to the centroid of each junction, $\psi({\bf q}^d_{j})=R_j$. Next,\\ $\psi\big(\textit{Adj}({\bf q}^d_{j}) \big)=R_j$. Then, assign all descendants of $\textit{Adj}({\bf q}^d_{j})$ the \\same region ID. \\
+		\\[-0.5em]
+		$Clustering(S,{\bf q}^d_{j}$ `orientation') --- partition elements $s_i\in S$ into\\ clusters by the orientation of a directed edge $(s_i,{\bf q}^d_{j})$, and returns \\ $\{ {\bf q}^o_{j,k} \}$ the mean orientation of each cluster. \\
+		\\[-0.5em]
+		$BranchSeg\big(S,\{{\bf q}^{o}_{j,k}\}\big)$--- assign a branch ID $\phi(\cdot)$ to each element \\of $S$ by orientation, where ${\bf q}^o_{j,k}$ is the orientation of branch $B_{j,k}$.\\
+		\hline
+	\end{tabular}
+\end{table}
+
+\begin{algorithm}[h]
+	\begin{algorithmic}[1]
+		\STATE $V_{J}=\{{\bf q}^g\}$
+		\FOR{all ${\bf q}^*_{v} \subset V^*$ }
+		\IF {${\bf q}^*_v$ is a junction node}
+		\STATE $V_J = V_J\cup \{{\bf q}^*_{v}\} $
+		\ENDIF
+		\ENDFOR	
+		\STATE $\{{\bf q}^{d}_{j}\}_{j=1,2,\dotsm, N_d}\leftarrow Clustering(V_J,$`distance') 
+		\STATE $\{\psi({\bf q}^*_v)=R_j\}_{j=1,2,\dotsm, N_R}\leftarrow RegionSeg(V^*, \{{\bf q}^{d}_{j}\}$)
+		\FOR{$(j=1;j=j+1;j\le N_R)$}
+		\STATE $S \leftarrow \{{\bf q}^*_v\in V^*|\psi({\bf q}^*_v) =R_j\}$
+		\STATE $\{{\bf q}^{o}_{j,k}\}_{k=1,2,\dotsm, N_{B_j} } \leftarrow Clustering(S, {\bf q}^{d}_{j}$ `orientation') 
+		\STATE $\{\phi({\bf q}^*_v)=B_{j,k}\}_{k=1,2,\dotsm, N_{B_j}}\leftarrow BranchSeg(S, \{{\bf q}^{o}_{j,k}\}$) 
+		\ENDFOR
+		
+	\end{algorithmic}
+	\caption{\textit {Map Segmentation}. Input: The obstacle-weighted RRT $\mathcal{T}_{obs} = \{V, V_{obs}, V^*\}$. Output: Map segmentation: $M = \{V_J, \psi(V^*), \phi(V^*)\}$  }
+	\label{alg:MapSeg}
+\end{algorithm}
+% Step 1:  Then we partition the set of junction nodes ($V_J$) using Euclidean distance as the distance metric and it yields $N_d$ clusters represented by their centroid coordinates (line 5). Next, the map can be split into $N_d$ regions corresponding to the $N_d$ clusters of junctions nodes (line 6). Finally, each region is further partitioned into branches by their orientations (lines 7-10).
+
+%We describe some issues of Alg. \ref*{alg:MapSeg} implementation here. 
+In step 3, region segmentation proceeds in three phases. 
+First we select a cluster of $V_J$ and set the junction nodes as seeds. 
+Then we grow the region with these seeds by adding their descendants  generation by generation in $\mathcal{T}_{obs}$. 
+The region expansion stops at the next junction. In step 4, branch segmentation is a result of clustering. 
+Considering all ${\bf q}^*_v$ in the $j$-th region, we connect ${\bf q}^d_{j}$ to ${\bf q}^*_v$, where ${\bf q}^d_{j}$ is the centroid of the $j$-th junction cluster. 
+Branches can be obtained by clustering all these directed edges (${\bf q}^d_{j}, {\bf q}^*_v$).              
+    
+\begin{figure}[h]
+	\centering
+	\begin{overpic}[width=0.9\columnwidth]{StdMap1234}
+	\end{overpic}
+	
+	\caption{\label{fig:StdMap1234} Map segmentation illustration for Alg. \ref{alg:MapSeg}. The goal (red dot) is located at (99,5).  (a) represents step 1 and 2, where yellow points are nodes in $V^*$, and green points are junction nodes in $V_J$. (b) and (c) show step 3, where regions are marked as different colors. (d) illustrates step 4 in a region, where branches are marked as different colors. }
+\end{figure}
+
+\begin{definition}\label{def:robust}
+	{\normalfont (aggregation robustness.)} Considering a multi-robot system with a global input, we define robustness as the ability of an aggregation procedure to keep aggregated swarms in their regions despite influences of a global controller.
+\end{definition}
+
+If microrobots keep escaping from the goal region, or the procedure gets trapped in a local minimum (e.g. moving a swarm of microrobots back and forth without progress), we say it is not robust. 
+The map segmentation is essential for identifying relatively closed regions $\{R_i\}$ which we use to perform discrete region transitions on swarms.  
+ 
+
+With map segmentation, we are able to process the second stage ``conquer". 
+This process is presented in Alg. \ref{alg:Agg} and illustrated in Fig. \ref{fig:DCproc}. The assumptions of Alg. \ref{alg:Heuristics} hold. 
+A global planner moves a swarm of microrobots from region $R_j$ to $R_{j.next}$, where region $R_j$ and $R_{j.next}$ share an edge, and region $R_{j.next}$ is closer to the goal, $d \langle {\bf q}^d_{j.next}, {\bf q}^g\rangle < d \langle {\bf q}^d_j, {\bf q}^g\rangle$. 
+A local planner assigns priorities to microrobots at different branches of region $R_j$, and leads them to the closer region $R_{j.next}$.              
+
+\begin{figure}[h]
+	\vspace{1.8 mm}
+	\centering
+	\begin{overpic}[width=0.8\columnwidth]{DCproc1} % timecom
+	\end{overpic}
+	
+	\caption{\label{fig:DCproc} Black circles are microrobots, and regions are marked by colored outline. (a) Robots exist in the purple region $R_i$ and the orange region $R_j$. $R_j$ is the farthest region from the goal (red dot). (b) and (c) The branch filled with orange has higher priority. $R_{j.next}$ is marked as green. A control input drives the robot $r_{k_m,i_m}$ (hollow circle) to $R_{j.next}$. (d) Complete a discrete region transition for a swarm from $R_j$ to $R_{j.next}$.  }
+\end{figure}
+
+
+This divide-and-conquer algorithm consists of three \textit{while} loops: 
+(i) identify the farthest region $R_{j_m}$ that microrobots exist  (Fig. \ref{fig:DCproc}(a)), and $d \langle {\bf q}^d_j, {\bf q}^g\rangle$ is the cost from the $j$-th junction centroid to goal; 
+(ii) pick a branch with the highest priority, i.e., with more robots closer to the junction centroid ${\bf q}^d_{j_m}$ (Fig. \ref{fig:DCproc}(b)), computed by 
+\begin{equation}
+\upsilon(B_{j_m,k}) = \sum_{i=1}^{\#\text{robots in } B_{j_m,k}}\gamma^{s_d(i)},   
+\end{equation} 
+with $0<\gamma<1, s_d(i)=d\langle {\bf p}^{r^{k_m,i}}, {\bf q}^d_{j_m}\rangle,  r^{k_m,i}$ the $i$-th robot inside branch $B_{j_m,k_m}$; 
+(iii) identify the closest robot $r_{k_m,i_m}$ to ${\bf q}^d_{j_m}$, and drive it to the nearest ${\bf q}^r_v \in V$, and then move it towards some ${\bf q}_{R_{jm.next}}\in V$ in $R_{jm.next}$  (Fig. \ref{fig:DCproc}(b) and (c)). After moving all robots in $R_{j_m}$ to $R_{j_m.next}$, we complete a discrete region transition for a swarm  (Fig. \ref{fig:DCproc}(d)). 
+
+
+
+
+
+\begin{algorithm}[h]
+	\begin{algorithmic}[1]
+		\WHILE {$F(n,t) > \sigma$} %  \frac{1}{n}\sum_{i=1}^{n}d\langle {\bf p}^{r_i}_t,{\bf q}^g\rangle
+		\STATE $R_{j_m} \leftarrow \textrm{argmax}\; d \langle {\bf q}^d_j, {\bf q}^g\rangle, j = 1,2, \dotsm, N_R$ 
+		\WHILE {there exists any robot in $R_{j_m}$}
+		\STATE $B_{j_m,k_m} \leftarrow \underset{B_{j_m,k}\in R_{j_m}}{\textrm{argmax}}\; \upsilon(B_{j_m,k}), k=1,2,\dotsm, N_{B_j}$
+		\WHILE{there exist any robot in $B_{j_m,k_m}$}
+		\STATE $r_{k_m,i_m} \leftarrow \textrm{argmin}\; d\langle {\bf p}^{r_{k_m,i}}_{t},{\bf q}^d_{j_m} \rangle $, $ \forall r_{k_m,i}$ in $B_{j_m,k_m}$ 
+		\STATE ${\bf q}^r_v \leftarrow$ the nearest vertex $\in V$ to $r_{km,im}$ 	
+		\STATE ${\bf u}_t \leftarrow$ move  $r_{km,im}$ towards ${\bf q}_{R_{jm.next}}$ via ${\bf q}^{r}_v$
+		\ENDWHILE
+		\ENDWHILE
+		\ENDWHILE
+%		\STATE return ${\bf u}$
+	\end{algorithmic}
+	\caption{\textit {Divide-and-conquer Aggregation}. Input: $\mathcal{T}_{obs} = \{V, V_{obs}, V^*\}$, $M = \{V_J, \psi(V^*), \phi(V^*)\}$,  initial positions $\{ {\bf p}^{r_i}_{t_0}\}$ of all robots $\{r_i\}$. Output: ${\bf u}_t$   }
+	\label{alg:Agg}
+\end{algorithm}
+ 
+
+%
+%\begin{prop}\label{prop:reverse}
+%	For a local map $\mathcal{G} = R_j \cup R_{j.next}$, considering a trajectory generated by RRT/obstacle-weighted RRT, the aggregation from region $R_j$ to $R_{j.next}$ is robust.   
+%\end{prop}
+%\begin{proof}
+%	 The trajectories in $\mathcal{G}$ are part of the global map $G$, heading to ${\bf q}^g$. The aggregation assignment is to navigate robots from $R_j$ to $R_{j.next}$. Considering a global input that steers robots to ${\bf q}^g$, we say an aggregation is robust in $\mathcal{G}$ if it does not result in reentry of robots to any branches. 
+%	
+%	The proof proceeds by contradiction.
+%	A trajectory connecting $R_j$ and $R_{j.next}$ has three steps: navigating from $R_j$ to the junction, getting through the junction, and heading to the next junction in $R_{j.next}$. Let $\theta_i$ ($ i = 1,2,3$) denotes the approximate orientation of these steps, respectively. And all these trajectories share the same junction. Assuming that there exists a trajectory with its control input that leads to reentry of some robots to $B_{j,k}$, where $B_{j,k}$ is the $k$-th branch of $R_j$, this trajectory should reverse the steps of some planned trajectory ($\theta^a_i,i = 1,2, 3$), that is, in step 1, the trajectory takes the orientation $(\theta^a_3+\pi)$ to get to the junction, and then navigates through the junction heading towards $(\theta^a_2+\pi)$. However, the orientation from the junction to $R_{j.next}$ is restricted to $\theta^a_2$ with small deviation because all trajectories from $R_j$ to $R_{}j.next$ share this junction. This reaches a contradiction. Hence the aggregation in $\mathcal{G}$ is robust.               	 
+%\end{proof}
+%\begin{prop}\label{prop: relativeclosedreg}
+%	Given the global input that steers robots to ${\bf q}^g$, $R_{j.next}$ is a relatively closed region in $\mathcal{G}$, where $\mathcal{G}=R_j \cup R_{j.next}$. 
+%\end{prop}
+%
+%\begin{proof}
+%``Relatively" refers to with high probability. From Proposition \ref{prop:reverse}, we can easily conclude that $R_{j.next}$ is a relatively closed region in $\mathcal{G}$.
+%\end{proof}
+
+
+%\begin{prop}
+%	{\normalfont (convergence.)} Given a swarm of microrobots $\{r_i\}$, the map $G_{free}$ of size $m$, the map segmentation $\{R_i\}$, and the global input, {\normalfont Alg. \ref{alg:Agg}} converges to $\mathcal{D}$ as $t\rightarrow \infty$, that is, $\forall; t>t_f(N_R,m)$, $F(n,t) < \sigma$, for some small value $\sigma >0$.  
+%\end{prop}
+%
+%\begin{proof}
+%	%Each time we consider the farthest robot, say $r_i$, move $r_i$ to the goal location ${\bf q}^g$, and then consider the next farthest robot. 
+%	Considering a region $R_j$, with $R_{j.next}$ and $\mathcal{G}=R_j\cup R_{j.next}$, the third \textit{while} loop (lines 5 - 8 in Alg. \ref{alg:Agg}) can moves all robots from each branch of $R_j$ to $R_{j.next}$ within 3 iterations, because a region has at most 3 branches in practice and $R_{j.next}$ is a relatively closed region in $\mathcal{G}$ (Proposition \ref{prop: relativeclosedreg}). This process can repeat at most $O(N_R)$ times since there are $N_R$ regions in total. Note that line 2 and line 4 take constant time. Hence Alg. \ref{alg:Agg} drives robots from all over the map to $\mathcal{D}$ in $O(N_R)$ iterations, i.e., Alg. \ref{alg:Agg} converges to $\mathcal{D}$ within $t_f(N_R, m)$ time.
+%\end{proof}
+
+
+To analyze time complexity of the divide-and-conquer recurrence, we need the following assumptions:
+(i) the map is connected and bounded, 
+(ii) ``closed region" and ``dead end" definitions, 
+and (iii) aggregation time is proportional to map area and population. 
+Let $G$ denote a map with $Area(G) = m,\; Population(G) = n,\; Density(G) = \rho=n/m$.
+If $T(mn)$ is the running time for map $G$, we start from region $R_{j_m}$, $G^{\prime}(0) = G-R_{j_m}$, $Area(G^{\prime}(0))=\xi m, \;Population(G^{\prime})=\xi\rho m$, where $\xi$ is a discount factor. 
+Level 0 of recurrence is:
+\begin{equation}\label{DC} 
+T(mn) = T(\xi mn)+f\big((1-\xi)\rho m\cdot (1-\xi)m\big),
+\end{equation}
+where $f((1-\xi)^2\rho m^2)$ denotes the aggregation time in $R_{j_m}$, with $(1-\xi)\rho m$ the population and $(1-\xi)m$ the area. After we move out all robots in $R_{j_m}$, the aggregation map shrinks from $G$ to $G^{\prime}(0)$.
+
+We can easily derive the recursive form for level $i$ using two models. 
+In the first recurrence model, we assume that the aggregation map shrinks with a constant discount factor $\xi$ each time, then $Area(G^{\prime}(i))=\xi\cdot Area(G^{\prime}(i-1))=\xi^{i+1}m$,
+ \begin{equation}\label{Eqn:DCj1} 
+ T(\xi^imn) = T(\xi^{i+1}mn)+f\big(\xi^{i}(1-\xi)\rho m\cdot \xi^i(1-\xi)m\big),
+ \end{equation}
+where the density is assumed to be a constant in $f(\cdot)$. 
+In fact, the density decreases with aggregation since microrobots overlap. 
+So this assumption does not reduce the difficulty of the subproblem. 
+The base case is $T(n) = f(n)$ with $m = 1$, and we simplify $f(x)$ with a linear model $f(x) = kx$, then 
+\begin{equation}\label{Eqn:timecmp}
+\begin{split}
+	T(mn) = \sum_{i=0}^{\log_{1/\xi}m} f\big(\xi^{2i}(1-\xi)^2\rho m^2\big)\\=k\rho m^2(1-\xi)^2\sum_{i=0}^{\log_{1/\xi}m}\xi^{2i}.
+\end{split}
+\end{equation}
+Assuming $\log_{1/\xi}m$ is an integer, and $m\gg\xi$,  Eqn. \ref{Eqn:timecmp} can be simplified to
+\begin{equation}\label{Eqn:timecmpS}
+\begin{split}
+T(mn) =k\rho m^2\big(\frac{2}{1+\xi}-1\big),
+\end{split}
+\end{equation}
+
+In the second model, we reduce the map by a constant area $(1-\xi)m$ each time, then level $i$ has the form
+  \begin{equation}\label{Eqn:DCj2}
+  \begin{split}
+ T\big( (1-i(1-\xi))mn \big) =
+ T\big( (1-(i+1)(1-\xi))mn \big)\\+f\big( (1-\xi)^2\rho m^2 \big).
+  \end{split} 
+  \end{equation}   
+Hence, we have 
+\begin{equation}\label{Eqn:DCj2S}
+T(mn) = k\rho m^2\sum_{i=0}^{1/(1-\xi)}(1-\xi)^2
+\end{equation}
+Assuming $\frac{1}{1-\xi}$ is an integer, we can write Eqn. \ref{Eqn:DCj2S} as
+\begin{equation}\label{Eqn:DCj2SS}
+T(mn) = k\rho m^2(1-\xi)(2-\xi)
+\end{equation}
+ 
+ 
+The performance of different discount factors $\xi$ is shown in Fig. \ref{fig:timecom}. 
+As $\xi$ increases, the scaled running time decreases fast, despite some fluctuations in the second model. 
+This means that the more we reduce the map size each time, the less efficient divide-and-conquer aggregation becomes. 
+As $\xi\rightarrow 0$, we actually have the heuristic aggregation instead. 
+This is equivalent to decreasing the map size from $m$ to 1 ($\xi = \frac{1}{m}$) with one recurrence. 
+For both models (Eqn. \ref{Eqn:timecmpS} and \ref{Eqn:DCj2SS}), as $\xi\rightarrow\frac{1}{m}$, $T(mn)\rightarrow O(m^2)$; as $\xi\rightarrow 1-\frac{k^*}{m}$, for some $k^*\in \mathbb{R}^+$, $k^*\ll m$, $T(mn)\rightarrow T(m)$. 
+Hence, the divide-and-conquer strategy makes it possible to reduce time complexity from $T(m^2)$ to $T(m)$. Note that $k^*$ is dependent on junctions in a map: the finer we can split the map, the smaller $k^*$ is.     
+
+\begin{figure}[h]
+	\centering
+	\begin{overpic}[width=0.8\columnwidth]{timecomp2} % timecom
+	\end{overpic}
+	
+	\caption{\label{fig:timecom} Running time estimation of the first recurrence model in Eqn. \ref{Eqn:timecmp} and the second recurrence model in Eqn. \ref{Eqn:DCj2S} }
+\end{figure}
+\begin{figure}[h]
+
+	\centering
+	\begin{overpic}[width=1\columnwidth]{maps1}
+	\end{overpic}
+	
+	\caption{\label{fig:maps} Blue polygons represent obstacles, and white channels are free space. We place a red dot at each goal location. These maps increase in size and complexity: (a) T-junction map, (b) a vascular network, and (c) a larger vascular network.} 
+	\vspace{-5 mm}
+\end{figure}
+%\begin{itemize}
+%\item the challenge 
+%\item discrete step
+%\item environment interference ratio  
+%\item different from grid world
+%\item priori knowledge about the environment is available
+%\item Gaussian Sampling \cite{boor1999gaussian}
+%\item in order to acquire and process the information required for palnning the motion of the obj, we propose the use of a network of cooperating cameras with a top view of area wher the obj can be moved. 
+%\item local planner, global planner, merge local info to global plan. 
+%\item We cope with the aggregation part by introducing a number of heuristic strategies.
+%\item Since sensing errors are an intrinsic property of tye system, we consider them as internal parameters, and we evaluate how they influence the performance.
+%\item The aim of this work is to show that our distributed palnning system can find near optimal paths, makes an efficient utilization of computatoion and communication resources, is robust to increasing sensing errors, and its performance scales with the size of the enbbironment and the number of cameras.++
+%\item The aggregation method we propose consists of ? phases: (i) Region Processing (ii) Branch Processing  (iii) Local Planning
+%\item map segmenting (k-means and image segmentation)
+%\item obstacle skeleton
+%\item Heuristics to reduce local minima attraction
+%\item RRT is to identify a gradient descent trakectory in this field.
+%\item under-actuated system
+%\item Steering function (maybe steering heuristics?)
+%\item Local planner: drive agents in the region of interest to the next level, while minimizing cost function.
+%\item RRt construct a tree where root is the target location s. Each node $t$ in the tree corresponds to a collision-free path while each edge $(u,v) \in E$ belongs to a contol input   
+%\item low Reynolds number motion
+%\item 
+%\end{itemize}

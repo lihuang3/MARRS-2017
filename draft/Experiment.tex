@@ -1,0 +1,34 @@
+\section{EXPERIMENT}\label{Experiment}
+
+\subsection{Electromagnetic Platform}
+We use a custom-made electromagnetic platform which consists of three orthogonal pairs of coils with separation distance equivalent to the outer diameter of a coil. 
+The coils (18 AWG, Custom Coils, Inc) are powered by six SyRen10-25 motor drivers with Tekpower HY3020E DC power supply. 
+An Arduino Mega 2560 provides PWM signal to control motor drives, and images are acquired using an IEEE 1394 camera (50 fps) with the region of interest approximate 20 mm$^2$. 
+Each image has $379\times366$ pixels, and each pixel represents an area of 40 $\mu$m$^2$ of the workspace.  
+We process microrobot detection and tracking in {\sc Matlab} using blob analysis and Kalman filters, and send control input ${\bf u}_t$ (i.e., the orientation of the magnetic field) to the Arduino Mega via USB serial port communication. 
+In experiments, the electromagnetic platform (with iron cores) can provide over 300 Gauss magnetic fields along any direction in the 20 mm$^3$ workspace center.    
+
+\subsection{Experiment Setup}
+The vascular network we used to validate path planning and aggregation algorithms is shown in Fig. \ref{fig:coil} (b) and Fig. \ref{fig:maps} (b). This maze is made of two layers of acrylic cut using a Universal Laser Cutter, one layer as the base, and the other as the polygonal obstacles. %, with the layers joined by double-sided adhesive (MH-927 12-3, Adhesive Research Ireland Ltd). 
+%The base layer is 5 mm thick, and the obstacle layer is 2 mm thick. 
+The frame is a 20$\times$20 mm$^2$ square, and the channel width is 2 mm. 
+In each experiment, the maze is filled with a mixture of microrobots and vegetable oil (0.45 mL) at the same concentration, and placed in the workspace center.
+The microrobots are composed of ferromagnetic particles (30 microns Fe$_3$O$_4$, Alpha Chemicals). 
+These microparticles aggregate into microrobots that  vary in sizes and shapes, with initial population over 300. 
+Microrobots align with magnetic fields when the magnitude is larger than 100 Gauss. 
+Because the density of ferromagnetic particles is over seven times larger than water, gradient fields provided by our electromagnetic platform are not able to drag microrobots around due to friction.
+ Hence we create rotational fields to make the microrobots roll along the base.   
+ Rolling a uniform field in the vertical plane at 5 Hz causes microrobots to move at an average velocity of 80 $\mu$m/s, and maximum velocity is over 350 $\mu$m/s.
+
+
+\subsection{Validation of Aggregation Algorithms}
+The results of the divide-and-conquer aggregation are compared with those of the benchmark heuristic aggregation as shown in Fig. \ref{fig:Exptcomp}. The running time is approximated by number of processed image frames for each experiment ($\approx$ 45 fps). The swarm population is estimated by averaging the number of pixels classified as robots in last 13500 frames ($\approx$ 5 min). With similar swarm populations, the average running time for the benchmark is 93,063 frames ($\approx 34.5$ min), and 60,628 frames ($\approx 22.5$ min) for the divide-and-conquer algorithm, which reduces by 34.9\%. Hence the divide-and-conquer aggregation outperforms the benchmark. 
+      \begin{figure}[h]
+      	\vspace{-3 mm}
+      	\centering      	\begin{overpic}[width=0.7\columnwidth]{comp2}
+      	\end{overpic}
+      	
+      	\caption{\label{fig:Exptcomp} Blue diamonds are benchmark data, and red circles are results for divide-and-conquer aggregation, with an experiment number next to each marker.} 
+      \end{figure}
+      
+      

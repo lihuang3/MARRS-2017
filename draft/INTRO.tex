@@ -1,0 +1,40 @@
+\section{INTRODUCTION}\label{Intro}
+
+Microrobots have great potential to be used in non-invasive surgery for drug delivery.
+Traditional drug delivery circulates the human body indiscriminatingly, which is why chemotherapy kills healthy and tumor cells alike. 
+  To reduce toxic drug exposure to healthy cells, \emph{targeted drug delivery} seeks to steer chemotherapy directly to diseased tissue. 
+Many methods for drug delivery have been explored, including beaded delivery formulations, liposomal delivery systems, encapsulated chemotherapy in nanoparticles, and magnetic micro-carriers navigated by magnetic fields \cite{tiwari2012drug}. 
+  
+Recent works have investigated many strategies to manipulate a swarm of simple robots with limited computation and communication  \cite{pierson2015bio, fine2013eliciting,becker2013reconfiguring,bobadilla2011controlling}. %such as sheep herding, environment eliciting, stochastic control, obstacle construction, discrete transition systems, etc. in \cite{pierson2015bio}, \cite{fine2013eliciting}, \cite{shahrokhi2015stochastic}, \cite{becker2013reconfiguring}, \cite{bobadilla2011controlling}. 
+\begin{figure}[h]
+	\centering
+	\begin{overpic}[width=1\columnwidth]{fig1}
+	\end{overpic}	
+	\caption{\label{fig:coil} (a) The six-coil electromagnetic system. (b) Microrobot swarms aggregation in a vascular network tested in experiments. (c)-(f) Video frames from a experiment. The goal location is marked with a red point. (c) $t = 0$ min, (d) $t = 4$ min, (e) $t = 19$ min, (f) $t = 36$ min}
+\end{figure}
+\cite{pierson2015bio} proposed a control strategy that by introducing herders to drive a swarm of herding animals to a desired location with repelling potential fields. 
+Fine et al.\ reported how to actively design environments to assist the process of controlling multiple agents using \textit{shape grammars} \cite{fine2013eliciting}. This method addresses automatic generation of environments given specific swarm objective and a control model of agents.  
+\cite{becker2013reconfiguring} showed particle computation methods to perform permutations between different swarm formations by aptly adding obstacles in grid workspace, where they used mobile particles with maximal motion and a global input. 
+Another example of exploiting environment is \cite{bobadilla2011controlling}, where a state space is partitioned into discrete transition systems, and gates are configured to guide a swarm of simple robots to achieve state transition, and thereby to accomplish high-level tasks.
+
+However, many microrobots have limited capabilities for sensing and actuating, so external sensors (e.g. MRI, cameras) and actuators (e.g. external electric or magnetic fields) must be employed.
+Experimentally, microrobot swarms such as paramagnetic microparticles, $Tetrahymena$ $pyriformis$, and magnetotactic bacteria have attracted growing attention in many applications of micro-assembly, self-assembly, and targeted therapies, for example,  \cite{khalil2013microassembly, kim2013swarm, cheang2015self, martel2010using, de2014three}. These microrobots usually are physically simple agents, and are steered by global fields where every robot receives the same control signal.
+ Many strategies and algorithms have been developed for navigation and motion control of microrobots in free space \cite{kei2014multiple, wong2016independent, kim2011real}. 
+ \cite{khalil2013control} demonstrated control of a single microrobot in a micro-fabricated maze.  
+ Scheggi et al.\ implemented and compared six path planning algorithms using magnetic microrobots \cite{scheggi2016experimental}.         
+
+
+Our previous work explored microrobot swarm aggregation in a planar grid environment\cite{mahadev2016collecting}, where we considered microrobots capable of overlapping, directed by a global input, and moving in discrete steps. The valid commands are limited to elements of the set $M=$\{$\uparrow$, $\downarrow$, $\rightarrow$, $\leftarrow$\}.  We presented element-wise algorithms that worked iteratively by selecting two disjoint microrobots, moving the first microrobot until it was manuevered to the same location as the second, and repeated until all microrobots were collected to the same location.
+
+This paper addresses aggregating a microrobot swarm in vascular networks using only a global input. 
+This is divided into three challenges: (i) generating swarm trajectories, (ii) realizing robust swarm transitions, and (iii) constructing swarm-level strategies to reduce task time complexity. 
+To address (i) and (ii), we use an augmented rapidly-exploring random tree (RRT) for path planning. 
+A divide-and-conquer strategy is employed to address (iii) for swarm aggregation.
+ Problem formulation and modeling are elaborated in \ref{ProbForm}. 
+  Section \ref{sec:path} and \ref{sec:agg} introduce trajectory generation and algorithms for aggregation. 
+  Section \ref{Simul} compares performance with different maps, aggregation methods, and swarm populations.
+   A hardware implementation is described in Section \ref{Experiment}.   
+
+  
+  
+  

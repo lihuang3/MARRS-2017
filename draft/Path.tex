@@ -1,0 +1,151 @@
+\section{Swarm Path Planning}\label{sec:path}
+
+Our previous research built an obstacle-weighted rapidly-exploring random tree (RRT) planner to discover near-medial-axis routes to the goal location to deliver a microrobot swarm.  
+
+Sampling-based motion planning algorithms have shown great success in exploring collision-free paths for many scenarios. Probabilistic roadmaps (PRMs) \cite{kavraki1998probabilistic} and rapidly-exploring random trees (RRTs) \cite{lavalle1998rapidly} are two popular planners. These planners generate random configurations in free space, connect them to create a graph of feasible paths, and link start and goal locations. In this paper, we focus on multi-shot 2D path planning with RRT and its extensions. Many attempts have shown success in improving the performance of RRTs near obstacles, such as narrow passage and tight region problems using a retraction strategy \cite{zhang2008efficient} \cite{tang2006obstacle}.  Typically, retraction-based planners bias a configuration towards a more desirable region, for example, sampling new configurations in narrow paths more densely, and growing the tree near medial axes of $G_{free}$. %The configuration generation of RRT usually behaves in  an unbiased manner, but with retraction, the resulting planner is steered towards the region of interest. 
+As a result, less iterations are required to generate a feasible path connecting start and goal locations. 
+
+%A problem arises when it comes to a microrobot swarm. As we consider simple microrobots under a global controller, moving one particular agent leads to all others drifting away from their original locations. 
+Applying an RRT-based path to a microrobot swarm using a global input can lead to problems: moving one particular agent may cause all the others to drift away from their initial locations.
+These locations may not be near any existing configurations on the tree ($\mathcal{T}$). Hence our RRT planner should have the following feature: for any robot $r_i$ in $G_{free}$, we have
+\begin{equation}\label{Eqn:issue1}
+\|{\bf p}^{r_i}-{\bf q}_v\|_2\le \epsilon,
+\end{equation}
+for some $\epsilon>0$,  where ${\bf q}_v$ is the nearest vertex in $\mathcal{T}$. We grow a tree in an unbiased manner, such that sampling configurations are distributed uniformly. We also require sufficient configurations to guarantee Eqn. \ref{Eqn:issue1}.
+%
+%an intuitive way of performing aggregation is moving each microrobot to the goal location iteratively until the cost function is less than certain threshold. This results a RRT planner of $O(N)$ pairs of paths, and each connects the goal ${\bf q}$ and the current location of microrobot $r_i (i=1,2,\dotsm, N)$. However, the microrobot system is dynamic since
+\begin{figure}[h]
+	\vspace{2 mm}
+	\centering
+	\begin{overpic}[width=0.7\columnwidth]{MethFig1}
+	\end{overpic}
+	
+	\caption{\label{fig:MethFig1} Microrobot aggregation along different trajectories. 
+		%The blue polygons are obstacles, and the white region is free space. 
+		One swarm (green circles) follows a black solid trajectory near the medial axes, and they keep moving together. Another swarm, represented by red triangles, follows the shortest path to the goal, which traps some microrobots at the corner and slows the aggregation process}
+\end{figure}
+
+Another issue with microrobot swarms is the environment interference. For example, in Fig. \ref{fig:MethFig1} a gray dashed line (trajectory 1) is the shortest path to the goal location, and a black solid line (trajectory 2) represents a near-medial-axis path. Although trajectory 1 is shorter than 2, such a path significantly slows the aggregation process near obstacles. We propose an approach  which reroutes existing paths towards medial axes of free space. Compared to retraction-based planners, this approach replans a new route with existing configurations in $\mathcal{T}$ instead of generating biased sampling of tree nodes.   
+\begin{table}\label{table1}
+	
+	\begin{tabular}{l}
+		\Xhline{0.8pt}	 
+		\\[-0.8em]
+		\multicolumn{1}{c}{\bf {Variables, and functions used in Alg. \ref{alg:RRT} and \ref{alg:ARRT}}} \\
+		\\[-1em]
+		\hline
+		\\[-0.8em]
+		$V$ --- the set of vertices (configurations) of $\mathcal{T}$.\\
+		\\[-0.5em]
+		$V_{obs}$ --- the set of sampling nodes on the boundary of obstacles.\\
+		\\[-0.5em]
+		$V^*$ --- the set of configurations near medial axes of $G_{free}$. \\
+		\\[-0.5em]
+		$\pi({\bf q}_v)$ --- the predecessor of the configuration ${\bf q}_v$ in $\mathcal{T}$.\\
+		\\[-0.5em]
+		${\textit{Adj}}({\bf q}_v)$ --- the set of adjacent vertices. \\
+		\hline
+	\end{tabular}
+\end{table}
+
+    \begin{algorithm}[h]
+    	
+    	\begin{algorithmic}[1]
+    		\STATE $ V = \{{\bf q}^g\},V_{obs}=\emptyset,\mathcal{T} = \{V,V_{obs}\}$
+    		\WHILE{$|V|\le NumNode$}
+    		\STATE ${\bf q}_{rand} \leftarrow$ a randomly generated point in $G$
+    		\STATE ${\bf q}_{near} \leftarrow$ the nearest neighbor of ${\bf q}_{rand}$ in $V$
+    		\STATE ${\bf q}_{new} \leftarrow$ extend ${\bf q}_{near}$ towards ${\bf q}_{rand}$ for unit length %+c\cdot\frac{{\bf q}_{rand}-{\bf q}_{near}}{\| {\bf q}_{rand}-{\bf q}_{near}\|_2}$
+    		\IF{$({\bf q}_{near},{\bf q}_{new}) \cap G_{obs}=\emptyset$}
+    		\STATE $V = V \cup \{{\bf q}_{new}\}$
+    		%	\STATE $E = E \cup ({\bf q}_{near},{\bf q}_{new})$
+    		\STATE $\pi({\bf q}_{new})={\bf q}_{near}$
+    		\STATE $d\langle {\bf q}_{new}, {\bf q}^g\rangle = d\langle {\bf q}_{new}, {\bf q}_{near}\rangle + d\langle {\bf q}_{near}, {\bf q}^g\rangle   $
+    		\ELSE
+    		\STATE ${\bf q}_{obs} \leftarrow ({\bf q}_{near},{\bf q}_{new}) \cap \partial G_{obs}$
+    		\STATE $V_{obs} = V_{obs} \cup \{{\bf q}_{obs}\}$
+    		\ENDIF
+    		\ENDWHILE
+    		\STATE return $\mathcal{T}$
+    	\end{algorithmic}
+    	\caption{\textit {RRT}. Input: configuration space $G$, goal location ${\bf q}^g$, total number of configurations $NumNode$. Output: an RRT $\mathcal{T}$}
+    	\label{alg:RRT}
+    	
+    \end{algorithm}
+The basic RRT planner builds a connected tree rooted at the goal location, and samples tree nodes randomly in free space of $G$ to explore the graph. This process (Alg. \ref{alg:RRT}) proceeds as follows: to grow the tree, we generate a random point ${\bf q}_{rand}$ in $G_{free}$, and perform the nearest neighbor query (lines 3-4). Next, ${\bf q}_{near}$ is extended towards ${\bf q}_{rand}$ with unit length, and ends with ${\bf q}_{new}$. If the edge $({\bf q}_{near},{\bf q}_{new})$ is collision-free, which corresponds to a control input steering robots from ${\bf q}_{near}$ to ${\bf q}_{new}$, we add the new node to the tree and update the distance metric (lines 6-9).  Since all sampling points are connected to the tree, a robot can reach the goal location from any tree nodes simply by following their predecessors iteratively. 
+
+
+
+
+
+
+\begin{algorithm}[h]
+	\begin{algorithmic}[1]
+		%		\STATE //Add obstacle weight to the tree nodes
+		\STATE $  V^* = \{{\bf q}^g\}, \mathcal{T}_{obs} = \{V, V_{obs},V^*\}$
+		\FOR{all ${\bf q}_v \in V$}
+		\STATE ${\bf q}_{obs}^{near} \leftarrow$ the nearest neighbor of ${\bf q}_v$ in $V_{obs}$
+		%\STATE $d\langle {\bf q}_v,\pi({\bf q}_v)\rangle = d\langle {\bf q}_v,\pi({\bf q}_v)\rangle+e^{-a\|{\bf q}_v-{\bf q}_{obs}^{near}\|_2+b}$
+		\STATE $w({\bf q}_v) = e^{-a\|{\bf q}_v-{\bf q}_{obs}^{near}\|_2+b}$
+		\IF{$w({\bf q}_v) < \zeta$}
+		\STATE	$V^* = V^* \cup \{{\bf q}_v\}$
+		\ENDIF 
+		\ENDFOR
+		\FOR{all ${\bf q}^*_{v} \in V^*$}
+		\STATE $d\langle {\bf q}^*_v, {\bf q}^g\rangle=\infty$
+		\FOR{all ${\bf q}^*_{u} \in \textit{Adj}({\bf q}^*_{v}) \cap V^* $  }
+		\IF{$d\langle {\bf q}^*_v,{\bf q}^g\rangle > d\langle {\bf q}^*_v,{\bf q}^*_{u}\rangle+ w({\bf q}^*_u)+d\langle {\bf q}^*_{u},{\bf q}^g\rangle $}
+		\STATE $\pi({\bf q}^*_v)={\bf q}^*_{u}$
+		\STATE $d\langle {\bf q}^*_v,{\bf q}^g\rangle = d\langle {\bf q}^*_v,{\bf q}^*_{u}\rangle+ w({\bf q}^*_u)+d\langle {\bf q}^*_{u},{\bf q}^g\rangle $
+		\ENDIF
+		\ENDFOR
+		\ENDFOR
+		%		\STATE // Rerouting RRT based on obstacle weight
+		\FOR{all ${\bf q}_v \in V$}
+		\IF{$\pi({\bf q}_v) \notin V^*$}
+		\STATE ${\bf q}^*_{near}\leftarrow$ the nearest neighbor of  ${\bf q}_v$ in $V^*$
+		\STATE $\pi({\bf q}_v)={\bf q}^*_{near}$
+		\ENDIF
+		\ENDFOR
+		\STATE return $\mathcal{T}_{obs}$
+	\end{algorithmic}
+	\caption{\textit {Obstacle-weighted RRT}. Input: the RRT $\mathcal{T}$ of Alg. \ref{alg:RRT}. Output: an obstacle-weighted RRT: $\mathcal{T}_{obs}$ }
+	\label{alg:ARRT}
+\end{algorithm}
+
+Note that in Alg. \ref{alg:RRT}, lines 10-12 are different from the original RRT \cite{lavalle1998rapidly}: if there is a collision along the path, we retract ${\bf q}_{new}$ to the boundary of the obstacle ${\bf q}_{obs}$. ${\bf q}_{obs}$ is not considered as a valid configuration in $\mathcal{T}$, instead, we add it to $V_{obs}$ to grow an obstacle-weighted RRT. These obstacle nodes assist in  steering paths away from obstacles. 
+
+
+\begin{figure}[h]
+	\vspace{1.5 mm}
+	\centering
+	\begin{overpic}[width=0.8\columnwidth]{ARRT}
+	\end{overpic}
+	
+	\caption{\label{fig:ARRT} (a) RRT (original): yellow dots are configurations of $\mathcal{T}$, and red dots are abandoned extensions within the blue obstacle. Trajectory generation relies on the shortest paths to the goal. (b) Obstacle-weighted RRT: green dots are near-medial-axis configurations $\in V^*$, yellow dots in the shadow are elements in $V$ affected by obstacles, and red dots inside the obstacle are retracted to the boundary (black dots) and added into $V_{obs}$. New paths tend to avoid near-obstacle regions, and approach near-medial-axis space.}
+\end{figure}
+
+
+
+We illustrate this process in Alg. \ref{alg:ARRT}, and compare it with the original RRT in Fig. \ref{fig:ARRT}. The weight of a node ${\bf q}_v$ in $\mathcal{T}$ is calculated as follows,
+\begin{equation}\label{ObsDist}
+	w({\bf q}_v)=e^{-a\|{\bf q}_v-{\bf q}_{obs}^{near}\|_2+b},
+\end{equation}
+where $a, b \in \mathbb{R}^+$. Therefore, weight decreases with distance from nearby obstacles. Hence, if we identify a gradient descent path to the goal with minimum-weight nodes, the new path tends to proceed near medial axes of free space.   
+A near-medial-axis set of configurations is constructed as: 
+\begin{equation}
+V^*=\{{\bf q}_v\in V|w({\bf q}_v)<\zeta \},
+\end{equation}
+for some  $\zeta\in \mathbb{R}^+$. The trajectory generation (lines 7-16) is shown in Fig. \ref{fig:ARRT}(b). We trim the tree to remove edges not connecting to vertices in $V^*$, and perform adjacent neighbors query to regrow the tree towards near-medial-axis regions. Section \ref{sec:agg} shows that obstacle-weighted RRT decreases aggregation time. 
+
+   
+
+
+
+
+
+
+
+
+
+

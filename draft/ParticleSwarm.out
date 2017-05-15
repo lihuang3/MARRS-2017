@@ -1,0 +1,13 @@
+\BOOKMARK [1][-]{section.1}{INTRODUCTION}{}% 1
+\BOOKMARK [1][-]{section.2}{PROBLEM FORMULATION}{}% 2
+\BOOKMARK [1][-]{section.3}{Swarm Path Planning}{}% 3
+\BOOKMARK [1][-]{section.4}{Swarm Aggregation}{}% 4
+\BOOKMARK [2][-]{subsection.4.1}{Heuristic Aggregation}{section.4}% 5
+\BOOKMARK [2][-]{subsection.4.2}{Divide-and-Conquer Aggregation}{section.4}% 6
+\BOOKMARK [1][-]{section.5}{SIMULATION}{}% 7
+\BOOKMARK [1][-]{section.6}{EXPERIMENT}{}% 8
+\BOOKMARK [2][-]{subsection.6.1}{Electromagnetic Platform}{section.6}% 9
+\BOOKMARK [2][-]{subsection.6.2}{Experiment Setup}{section.6}% 10
+\BOOKMARK [2][-]{subsection.6.3}{Validation of Aggregation Algorithms}{section.6}% 11
+\BOOKMARK [1][-]{section.7}{CONCLUSIONS}{}% 12
+\BOOKMARK [1][-]{section*.2}{References}{}% 13

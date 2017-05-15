@@ -1,0 +1,20 @@
+\section{PROBLEM FORMULATION}\label{ProbForm}
+
+Consider that a bounded 2D space $G \subset \mathbb{R}^2$ is consisted of free space ($G_{free}$) and obstacle space ($G_{obs}$). $G_{free}$ is connected by paths of width at least $w$. A swarm of simple microrobots are initialized at random locations in $G_{free}$. These simple microrobots have on-board computation or communication, and they are guided by a global field. Their bodies are less than $w/10$, and mutual interaction is ignored. An $n$-microrobot swarm has $2n$ degree-of-freedom in a plane, and applying a global field only adds two constraints ($x$ and $y$ components) to the system. To break the symmetry of swarm motion with a global field, the environment is employed to assist swarm tasks. 
+
+Our preliminary research explored path planning algorithms and aggregation strategies to collect these microrobots at a targeted location. We proposed an obstacle-weighted rapidly-exploring random tree (RRT) to plan near-medial-axis trajectories from any location to the goal, and benchmark heuristic and divide-and-conquer algorithms were developed for microrobot swarm aggregation in vascular networks. This paper presents an improved method for path planning with high efficiency and evaluate how well the environment can help with swarm aggregation. 
+
+The microrobots are modeled as dots without area. At time $t$, the position of the $i$-th microrobot is denoted as $(x_t^i, y_t^i)$ and a global control input $u_t=(u_x, u_y)$ moves the microrobot to
+\begin{equation}
+\big(x_{t+1}^i, y_{t+1}^i\big) = \big(x_t^i, y_t^i\big)+\big(u_x,u_y\big), 
+\end{equation}   
+or the robot stops at the boundary of an obstacle.
+\begin{figure}[h]
+	\centering
+	\begin{overpic}[width=1\columnwidth]{AggProc}
+	\end{overpic}
+	
+	\caption{\label{fig:AggProc} Blue polygons represent obstacles, and white channels are free space. We place a red dot at the goal location. The dashed arc represents the region that corresponds to $F(n,t)<\sigma$. (a) Simulated aggregation process after 1 step, (b) 200 steps, (c) 500 steps, and (d) 800 steps.} 
+\end{figure}
+
+

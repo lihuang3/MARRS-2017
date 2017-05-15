@@ -1,0 +1,123 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyperFirstAtBeginDocument{\AtBeginDocument}
+\HyperFirstAtBeginDocument{\ifx\hyper@anchor\@undefined
+\global\let\oldcontentsline\contentsline
+\gdef\contentsline#1#2#3#4{\oldcontentsline{#1}{#2}{#3}}
+\global\let\oldnewlabel\newlabel
+\gdef\newlabel#1#2{\newlabelxx{#1}#2}
+\gdef\newlabelxx#1#2#3#4#5#6{\oldnewlabel{#1}{{#2}{#3}}}
+\AtEndDocument{\ifx\hyper@anchor\@undefined
+\let\contentsline\oldcontentsline
+\let\newlabel\oldnewlabel
+\fi}
+\fi}
+\global\let\hyper@last\relax 
+\gdef\HyperFirstAtBeginDocument#1{#1}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\citation{tiwari2012drug}
+\citation{pierson2015bio,fine2013eliciting,becker2013reconfiguring,bobadilla2011controlling}
+\citation{pierson2015bio}
+\citation{fine2013eliciting}
+\citation{becker2013reconfiguring}
+\citation{bobadilla2011controlling}
+\citation{khalil2013microassembly,kim2013swarm,cheang2015self,martel2010using,de2014three}
+\citation{kei2014multiple,wong2016independent,kim2011real}
+\citation{khalil2013control}
+\citation{scheggi2016experimental}
+\citation{mahadev2016collecting}
+\@writefile{toc}{\contentsline {section}{\numberline {I}INTRODUCTION}{1}{section.1}}
+\newlabel{Intro}{{I}{1}{INTRODUCTION}{section.1}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces  (a) The six-coil electromagnetic system. (b) Microrobot swarms aggregation in a vascular network tested in experiments. (c)-(f) Video frames from a experiment. The goal location is marked with a red point. (c) $t = 0$ min, (d) $t = 4$ min, (e) $t = 19$ min, (f) $t = 36$ min}}{1}{figure.1}}
+\newlabel{fig:coil}{{1}{1}{(a) The six-coil electromagnetic system. (b) Microrobot swarms aggregation in a vascular network tested in experiments. (c)-(f) Video frames from a experiment. The goal location is marked with a red point. (c) $t = 0$ min, (d) $t = 4$ min, (e) $t = 19$ min, (f) $t = 36$ min}{figure.1}{}}
+\citation{kavraki1998probabilistic}
+\citation{lavalle1998rapidly}
+\citation{zhang2008efficient}
+\citation{tang2006obstacle}
+\@writefile{toc}{\contentsline {section}{\numberline {II}PROBLEM FORMULATION}{2}{section.2}}
+\newlabel{ProbForm}{{II}{2}{PROBLEM FORMULATION}{section.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces  Blue polygons represent obstacles, and white channels are free space. We place a red dot at the goal location. The dashed arc represents the region that corresponds to $F(n,t)<\sigma $. (a) Simulated aggregation process after 1 step, (b) 200 steps, (c) 500 steps, and (d) 800 steps.}}{2}{figure.2}}
+\newlabel{fig:AggProc}{{2}{2}{Blue polygons represent obstacles, and white channels are free space. We place a red dot at the goal location. The dashed arc represents the region that corresponds to $F(n,t)<\sigma $. (a) Simulated aggregation process after 1 step, (b) 200 steps, (c) 500 steps, and (d) 800 steps}{figure.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {III}Swarm Path Planning}{2}{section.3}}
+\newlabel{sec:path}{{III}{2}{Swarm Path Planning}{section.3}{}}
+\newlabel{Eqn:issue1}{{2}{2}{Swarm Path Planning}{equation.3.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces  Microrobot aggregation along different trajectories. One swarm (green circles) follows a black solid trajectory near the medial axes, and they keep moving together. Another swarm, represented by red triangles, follows the shortest path to the goal, which traps some microrobots at the corner and slows the aggregation process}}{2}{figure.3}}
+\newlabel{fig:MethFig1}{{3}{2}{Microrobot aggregation along different trajectories. One swarm (green circles) follows a black solid trajectory near the medial axes, and they keep moving together. Another swarm, represented by red triangles, follows the shortest path to the goal, which traps some microrobots at the corner and slows the aggregation process}{figure.3}{}}
+\citation{lavalle1998rapidly}
+\citation{mahadev2016collecting}
+\newlabel{table1}{{III}{3}{Swarm Path Planning}{figure.3}{}}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {1}{\ignorespaces \textit  {RRT}. Input: configuration space $G$, goal location ${\bf  q}^g$, total number of configurations $NumNode$. Output: an RRT $\EuScript  {T}$}}{3}{algorithm.1}}
+\newlabel{alg:RRT}{{1}{3}{Swarm Path Planning}{algorithm.1}{}}
+\newlabel{ObsDist}{{3}{3}{Swarm Path Planning}{equation.3.3}{}}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {2}{\ignorespaces \textit  {Obstacle-weighted RRT}. Input: the RRT $\EuScript  {T}$ of Alg. \ref  {alg:RRT}. Output: an obstacle-weighted RRT: $\EuScript  {T}_{obs}$ }}{3}{algorithm.2}}
+\newlabel{alg:ARRT}{{2}{3}{Swarm Path Planning}{algorithm.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces  (a) RRT (original): yellow dots are configurations of $\EuScript  {T}$, and red dots are abandoned extensions within the blue obstacle. Trajectory generation relies on the shortest paths to the goal. (b) Obstacle-weighted RRT: green dots are near-medial-axis configurations $\in V^*$, yellow dots in the shadow are elements in $V$ affected by obstacles, and red dots inside the obstacle are retracted to the boundary (black dots) and added into $V_{obs}$. New paths tend to avoid near-obstacle regions, and approach near-medial-axis space.}}{3}{figure.4}}
+\newlabel{fig:ARRT}{{4}{3}{(a) RRT (original): yellow dots are configurations of $\mathcal {T}$, and red dots are abandoned extensions within the blue obstacle. Trajectory generation relies on the shortest paths to the goal. (b) Obstacle-weighted RRT: green dots are near-medial-axis configurations $\in V^*$, yellow dots in the shadow are elements in $V$ affected by obstacles, and red dots inside the obstacle are retracted to the boundary (black dots) and added into $V_{obs}$. New paths tend to avoid near-obstacle regions, and approach near-medial-axis space}{figure.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {IV}Swarm Aggregation}{3}{section.4}}
+\newlabel{sec:agg}{{IV}{3}{Swarm Aggregation}{section.4}{}}
+\citation{bobadilla2011controlling}
+\citation{tiwari2012drug}
+\@writefile{toc}{\contentsline {subsection}{\numberline {IV-A}Heuristic Aggregation}{4}{subsection.4.1}}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {3}{\ignorespaces \textit  {Heuristic Aggregation}. Input: $\EuScript  {T}_{obs} = \{V, V_{obs}, V^*\}$, initial positions $\{ {\bf  p}^{r_i}_{t_0}\}$ of all robots $r_i$. Output: ${\bf  u}_t$ }}{4}{algorithm.3}}
+\newlabel{alg:Heuristics}{{3}{4}{Heuristic Aggregation}{algorithm.3}{}}
+\newlabel{def:closeregion}{{1}{4}{}{definition.1}{}}
+\newlabel{def:deadend}{{2}{4}{}{definition.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {IV-B}Divide-and-Conquer Aggregation}{4}{subsection.4.2}}
+\newlabel{table2}{{IV-B}{4}{Divide-and-Conquer Aggregation}{Item.6}{}}
+\newlabel{JTnode}{{4}{4}{}{definition.4}{}}
+\newlabel{def:robust}{{5}{4}{}{definition.5}{}}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {4}{\ignorespaces \textit  {Map Segmentation}. Input: The obstacle-weighted RRT $\EuScript  {T}_{obs} = \{V, V_{obs}, V^*\}$. Output: Map segmentation: $M = \{V_J, \psi (V^*), \phi (V^*)\}$ }}{5}{algorithm.4}}
+\newlabel{alg:MapSeg}{{4}{5}{Divide-and-Conquer Aggregation}{algorithm.4}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces  Map segmentation illustration for Alg. \ref  {alg:MapSeg}. The goal (red dot) is located at (99,5). (a) represents step 1 and 2, where yellow points are nodes in $V^*$, and green points are junction nodes in $V_J$. (b) and (c) show step 3, where regions are marked as different colors. (d) illustrates step 4 in a region, where branches are marked as different colors. }}{5}{figure.5}}
+\newlabel{fig:StdMap1234}{{5}{5}{Map segmentation illustration for Alg. \ref {alg:MapSeg}. The goal (red dot) is located at (99,5). (a) represents step 1 and 2, where yellow points are nodes in $V^*$, and green points are junction nodes in $V_J$. (b) and (c) show step 3, where regions are marked as different colors. (d) illustrates step 4 in a region, where branches are marked as different colors}{figure.5}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces  Black circles are microrobots, and regions are marked by colored outline. (a) Robots exist in the purple region $R_i$ and the orange region $R_j$. $R_j$ is the farthest region from the goal (red dot). (b) and (c) The branch filled with orange has higher priority. $R_{j.next}$ is marked as green. A control input drives the robot $r_{k_m,i_m}$ (hollow circle) to $R_{j.next}$. (d) Complete a discrete region transition for a swarm from $R_j$ to $R_{j.next}$. }}{5}{figure.6}}
+\newlabel{fig:DCproc}{{6}{5}{Black circles are microrobots, and regions are marked by colored outline. (a) Robots exist in the purple region $R_i$ and the orange region $R_j$. $R_j$ is the farthest region from the goal (red dot). (b) and (c) The branch filled with orange has higher priority. $R_{j.next}$ is marked as green. A control input drives the robot $r_{k_m,i_m}$ (hollow circle) to $R_{j.next}$. (d) Complete a discrete region transition for a swarm from $R_j$ to $R_{j.next}$}{figure.6}{}}
+\newlabel{DC}{{7}{5}{Divide-and-Conquer Aggregation}{equation.4.7}{}}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {5}{\ignorespaces \textit  {Divide-and-conquer Aggregation}. Input: $\EuScript  {T}_{obs} = \{V, V_{obs}, V^*\}$, $M = \{V_J, \psi (V^*), \phi (V^*)\}$, initial positions $\{ {\bf  p}^{r_i}_{t_0}\}$ of all robots $\{r_i\}$. Output: ${\bf  u}_t$ }}{6}{algorithm.5}}
+\newlabel{alg:Agg}{{5}{6}{Divide-and-Conquer Aggregation}{algorithm.5}{}}
+\newlabel{Eqn:DCj1}{{8}{6}{Divide-and-Conquer Aggregation}{equation.4.8}{}}
+\newlabel{Eqn:timecmp}{{9}{6}{Divide-and-Conquer Aggregation}{equation.4.9}{}}
+\newlabel{Eqn:timecmpS}{{10}{6}{Divide-and-Conquer Aggregation}{equation.4.10}{}}
+\newlabel{Eqn:DCj2}{{11}{6}{Divide-and-Conquer Aggregation}{equation.4.11}{}}
+\newlabel{Eqn:DCj2S}{{12}{6}{Divide-and-Conquer Aggregation}{equation.4.12}{}}
+\newlabel{Eqn:DCj2SS}{{13}{6}{Divide-and-Conquer Aggregation}{equation.4.13}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces  Running time estimation of the first recurrence model in Eqn. \ref  {Eqn:timecmp} and the second recurrence model in Eqn. \ref  {Eqn:DCj2S} }}{6}{figure.7}}
+\newlabel{fig:timecom}{{7}{6}{Running time estimation of the first recurrence model in Eqn. \ref {Eqn:timecmp} and the second recurrence model in Eqn. \ref {Eqn:DCj2S}}{figure.7}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces  Blue polygons represent obstacles, and white channels are free space. We place a red dot at each goal location. These maps increase in size and complexity: (a) T-junction map, (b) a vascular network, and (c) a larger vascular network.}}{6}{figure.8}}
+\newlabel{fig:maps}{{8}{6}{Blue polygons represent obstacles, and white channels are free space. We place a red dot at each goal location. These maps increase in size and complexity: (a) T-junction map, (b) a vascular network, and (c) a larger vascular network}{figure.8}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {V}SIMULATION}{6}{section.5}}
+\newlabel{Simul}{{V}{6}{SIMULATION}{section.5}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces  Particle aggregation in maps (a,b,c). The violin plot shows the probability density of the simulation data and the black line indicates the mean value. We performed 30 simulations for each combination of methods and swarm populations.}}{7}{figure.9}}
+\newlabel{fig:SimuPlot}{{9}{7}{Particle aggregation in maps (a,b,c). The violin plot shows the probability density of the simulation data and the black line indicates the mean value. We performed 30 simulations for each combination of methods and swarm populations}{figure.9}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {VI}EXPERIMENT}{7}{section.6}}
+\newlabel{Experiment}{{VI}{7}{EXPERIMENT}{section.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {VI-A}Electromagnetic Platform}{7}{subsection.6.1}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {VI-B}Experiment Setup}{7}{subsection.6.2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {VI-C}Validation of Aggregation Algorithms}{7}{subsection.6.3}}
+\@writefile{toc}{\contentsline {section}{\numberline {VII}CONCLUSIONS}{7}{section.7}}
+\bibstyle{IEEEtran}
+\bibdata{IEEEabrv,ParticleSwarmRef}
+\bibcite{tiwari2012drug}{1}
+\bibcite{pierson2015bio}{2}
+\bibcite{fine2013eliciting}{3}
+\bibcite{becker2013reconfiguring}{4}
+\bibcite{bobadilla2011controlling}{5}
+\bibcite{khalil2013microassembly}{6}
+\bibcite{kim2013swarm}{7}
+\bibcite{cheang2015self}{8}
+\bibcite{martel2010using}{9}
+\bibcite{de2014three}{10}
+\bibcite{kei2014multiple}{11}
+\bibcite{wong2016independent}{12}
+\bibcite{kim2011real}{13}
+\bibcite{khalil2013control}{14}
+\bibcite{scheggi2016experimental}{15}
+\bibcite{mahadev2016collecting}{16}
+\bibcite{kavraki1998probabilistic}{17}
+\bibcite{lavalle1998rapidly}{18}
+\bibcite{zhang2008efficient}{19}
+\bibcite{tang2006obstacle}{20}
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces  Blue diamonds are benchmark data, and red circles are results for divide-and-conquer aggregation, with an experiment number next to each marker.}}{8}{figure.10}}
+\newlabel{fig:Exptcomp}{{10}{8}{Blue diamonds are benchmark data, and red circles are results for divide-and-conquer aggregation, with an experiment number next to each marker}{figure.10}{}}
+\@writefile{toc}{\contentsline {section}{References}{8}{section*.2}}

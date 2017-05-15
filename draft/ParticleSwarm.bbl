@@ -1,0 +1,137 @@
+\begin{thebibliography}{10}
+\providecommand{\url}[1]{#1}
+\csname url@rmstyle\endcsname
+\providecommand{\newblock}{\relax}
+\providecommand{\bibinfo}[2]{#2}
+\providecommand\BIBentrySTDinterwordspacing{\spaceskip=0pt\relax}
+\providecommand\BIBentryALTinterwordstretchfactor{4}
+\providecommand\BIBentryALTinterwordspacing{\spaceskip=\fontdimen2\font plus
+\BIBentryALTinterwordstretchfactor\fontdimen3\font minus
+  \fontdimen4\font\relax}
+\providecommand\BIBforeignlanguage[2]{{%
+\expandafter\ifx\csname l@#1\endcsname\relax
+\typeout{** WARNING: IEEEtran.bst: No hyphenation pattern has been}%
+\typeout{** loaded for the language `#1'. Using the pattern for}%
+\typeout{** the default language instead.}%
+\else
+\language=\csname l@#1\endcsname
+\fi
+#2}}
+
+\bibitem{tiwari2012drug}
+G.~Tiwari, R.~Tiwari, B.~Sriwastawa, L.~Bhati, S.~Pandey, P.~Pandey, S.~K.
+  Bannerjee, \emph{et~al.}, ``Drug delivery systems: An updated review,''
+  \emph{International journal of pharmaceutical investigation}, vol.~2, no.~1,
+  p.~2, 2012.
+
+\bibitem{pierson2015bio}
+A.~Pierson and M.~Schwager, ``Bio-inspired non-cooperative multi-robot
+  herding,'' in \emph{Robotics and Automation (ICRA), 2015 IEEE International
+  Conference on}.\hskip 1em plus 0.5em minus 0.4em\relax IEEE, 2015, pp.
+  1843--1849.
+
+\bibitem{fine2013eliciting}
+B.~T. Fine and D.~A. Shell, ``Eliciting collective behaviors through
+  automatically generated environments,'' in \emph{Intelligent Robots and
+  Systems (IROS), 2013 IEEE/RSJ International Conference on}.\hskip 1em plus
+  0.5em minus 0.4em\relax IEEE, 2013, pp. 3303--3308.
+
+\bibitem{becker2013reconfiguring}
+A.~Becker, E.~D. Demaine, S.~P. Fekete, G.~Habibi, and J.~McLurkin,
+  ``Reconfiguring massive particle swarms with limited, global control,'' in
+  \emph{International Symposium on Algorithms and Experiments for Sensor
+  Systems, Wireless Networks and Distributed Robotics}.\hskip 1em plus 0.5em
+  minus 0.4em\relax Springer, 2013, pp. 51--66.
+
+\bibitem{bobadilla2011controlling}
+L.~Bobadilla, O.~Sanchez, J.~Czarnowski, K.~Gossman, and S.~M. LaValle,
+  ``Controlling wild bodies using discrete transition systems,'' \emph{Advanced
+  Robots}, 2011.
+
+\bibitem{khalil2013microassembly}
+I.~S. Khalil, F.~van~den Brink, O.~S. Sukas, and S.~Misra, ``Microassembly
+  using a cluster of paramagnetic microparticles,'' in \emph{Robotics and
+  Automation (ICRA), 2013 IEEE International Conference on}.\hskip 1em plus
+  0.5em minus 0.4em\relax IEEE, 2013, pp. 5527--5532.
+
+\bibitem{kim2013swarm}
+P.~S.~S. Kim, A.~Becker, Y.~Ou, A.~A. Julius, and M.~J. Kim, ``Swarm control of
+  cell-based microrobots using a single global magnetic field,'' in
+  \emph{Ubiquitous Robots and Ambient Intelligence (URAI), 2013 10th
+  International Conference on}.\hskip 1em plus 0.5em minus 0.4em\relax IEEE,
+  2013, pp. 21--26.
+
+\bibitem{cheang2015self}
+U.~K. Cheang and M.~J. Kim, ``Self-assembly of robotic micro-and nanoswimmers
+  using magnetic nanoparticles,'' \emph{Journal of Nanoparticle Research},
+  vol.~17, no.~3, p. 145, 2015.
+
+\bibitem{martel2010using}
+S.~Martel and M.~Mohammadi, ``Using a swarm of self-propelled natural
+  microrobots in the form of flagellated bacteria to perform complex
+  micro-assembly tasks,'' in \emph{Robotics and Automation (ICRA), 2010 IEEE
+  International Conference on}.\hskip 1em plus 0.5em minus 0.4em\relax IEEE,
+  2010, pp. 500--505.
+
+\bibitem{de2014three}
+D.~De~Lanauze, O.~Felfoul, J.-P. Turcot, M.~Mohammadi, and S.~Martel,
+  ``Three-dimensional remote aggregation and steering of magnetotactic bacteria
+  microrobots for drug delivery applications,'' \emph{The International Journal
+  of Robotics Research}, vol.~33, no.~3, pp. 359--374, 2014.
+
+\bibitem{kei2014multiple}
+U.~Kei~Cheang, K.~Lee, A.~A. Julius, and M.~J. Kim, ``Multiple-robot drug
+  delivery strategy through coordinated teams of microswimmers,'' \emph{Applied
+  physics letters}, vol. 105, no.~8, p. 083705, 2014.
+
+\bibitem{wong2016independent}
+D.~Wong, E.~B. Steager, and V.~Kumar, ``Independent control of identical
+  magnetic robots in a plane,'' \emph{IEEE Robotics and Automation Letters},
+  vol.~1, no.~1, pp. 554--561, 2016.
+
+\bibitem{kim2011real}
+D.~H. Kim, S.~Brigandi, A.~A. Julius, and M.~J. Kim, ``Real-time feedback
+  control using artificial magnetotaxis with rapidly-exploring random tree
+  (rrt) for tetrahymena pyriformis as a microbiorobot,'' in \emph{Robotics and
+  Automation (ICRA), 2011 IEEE International Conference on}.\hskip 1em plus
+  0.5em minus 0.4em\relax IEEE, 2011, pp. 3183--3188.
+
+\bibitem{khalil2013control}
+I.~S. Khalil, M.~P. Pichel, B.~A. Reefman, O.~S. Sukas, L.~Abelmann, and
+  S.~Misra, ``Control of magnetotactic bacterium in a micro-fabricated maze,''
+  in \emph{Robotics and Automation (ICRA), 2013 IEEE International Conference
+  on}.\hskip 1em plus 0.5em minus 0.4em\relax IEEE, 2013, pp. 5508--5513.
+
+\bibitem{scheggi2016experimental}
+S.~Scheggi and S.~Misra, ``An experimental comparison of path planning
+  techniques applied to micro-sized magnetic agents,'' in \emph{Manipulation,
+  Automation and Robotics at Small Scales (MARSS), International Conference
+  on}.\hskip 1em plus 0.5em minus 0.4em\relax IEEE, 2016, pp. 1--6.
+
+\bibitem{mahadev2016collecting}
+A.~V. Mahadev, D.~Krupke, J.-M. Reinhardt, S.~P. Fekete, and A.~T. Becker,
+  ``Collecting a swarm in a grid environment using shared, global inputs,'' in
+  \emph{Automation Science and Engineering (CASE), 2016 IEEE International
+  Conference on}.\hskip 1em plus 0.5em minus 0.4em\relax IEEE, 2016, pp.
+  1231--1236.
+
+\bibitem{kavraki1998probabilistic}
+L.~E. Kavraki and J.-C. Latombe, ``Probabilistic roadmaps for robot path
+  planning,'' 1998.
+
+\bibitem{lavalle1998rapidly}
+S.~M. LaValle, ``Rapidly-exploring random trees: A new tool for path
+  planning,'' 1998.
+
+\bibitem{zhang2008efficient}
+L.~Zhang and D.~Manocha, ``An efficient retraction-based rrt planner,'' in
+  \emph{Robotics and Automation, 2008. ICRA 2008. IEEE International Conference
+  on}.\hskip 1em plus 0.5em minus 0.4em\relax IEEE, 2008, pp. 3743--3750.
+
+\bibitem{tang2006obstacle}
+X.~Tang, J.-M. Lien, N.~Amato, \emph{et~al.}, ``An obstacle-based
+  rapidly-exploring random tree,'' in \emph{Proceedings 2006 IEEE International
+  Conference on Robotics and Automation, 2006. ICRA 2006.}\hskip 1em plus 0.5em
+  minus 0.4em\relax IEEE, 2006, pp. 895--900.
+
+\end{thebibliography}

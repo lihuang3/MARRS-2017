@@ -1,0 +1,86 @@
+\section{SIMULATION}\label{Simul}
+\begin{figure*}[h] % !htb
+	\centering
+	\begin{overpic}[width=0.67\columnwidth]{SimuPlot1}\end{overpic}
+	\begin{overpic}[width=0.67\columnwidth]{SimuPlot2}\end{overpic}
+	\begin{overpic}[width=0.67\columnwidth]{SimuPlot3}\end{overpic}	
+	\caption{\label{fig:SimuPlot} Particle aggregation in maps (a,b,c). The violin plot shows the probability density of the simulation data and the black line indicates the mean value. We performed 30 simulations for each combination of methods and swarm populations.}
+\end{figure*}
+We report the simulation results to evaluate our path planning approaches, RRT and obstacle-weighted RRT (OWRRT), compare the divide-and-conquer aggregation (DCA) with the heuristic aggregation (HRA), and study the impact of map and swarm population. We perform three sets of simulations, and in each set, we present two algorithms for aggregation and two methods for path planning. 
+
+
+
+
+
+
+Path planning and aggregation are carried out in three simulated maps (Fig. \ref{fig:maps}), including a T-junction map, and two vascular networks. 
+The obstacles are marked as blue polygons, and free space is white. 
+To initialize, we place $n$ microrobots randomly in free space, where $n \in \{2^1, 2^2, 2^3, \dotsm, 2^{10}\}$, and each microrobot is represented by a point with no area. 
+Given a global input ${\bf u}_t$ at time $t$, all microrobots will move towards the assigned direction for one discrete step of unit length (Eqn. \ref{Eqn:dynam1} and \ref{Eqn:dynam2}). 
+The goal is to gather microrobots to the goal location. 
+In practice, we define the task is accomplished if the average position of the swarm is near the goal, or $F(n,t) < \sigma$ (dashed circle in Fig. \ref{fig:maps}). 
+We count the total number of steps to approximate the running time for swarm aggregation in a map. 
+In each map, ten different microrobot populations are used. 
+For each population, we perform 30 simulations for three combinations of aggregation algorithms and path planning methods respectively: DCA+OWRRT, HRA+OWRRT, and HRA+RRT. 
+The results of simulations are compared using violin plots in Fig. \ref{fig:SimuPlot}.
+
+We evaluate the performance of these algorithms by their average running time (number of steps) and data distributions. 
+DCA+OWRRT outperforms any other combinations in all these simulation when the swarm population is large enough ($n \ge 2^3$). 
+The average aggregation time of DCA+OWRRT does not grow as fast as others, and it tends to approach an upper bound asymptotically in each vascular network. 
+Also, this combination shows reliability and efficiency with different environments and swarm populations. 
+For each independent trial, the aggregation time has small standard deviation. 
+Neither HRA+OWRRT nor HRA+RRT can compete with DCA+OWRRT in average aggregation time when the swarm size is greater than $2^3$. 
+The average running time of HRA+OWRRT and HRA+RRT increases with $\log n$ in most cases with large standard deviation, and the worst case can be extremely inefficient.         
+%\begin{figure}[h]
+%	\centering
+%	\begin{overpic}[width=0.7\columnwidth]{Tmap}
+%	\end{overpic}
+%	
+%	\caption{\label{fig:Tmap} T-map }
+%\end{figure}
+
+
+
+%\begin{figure}[h]
+%	\centering
+%	\begin{overpic}[width=0.9\columnwidth]{figVB}
+%	\end{overpic}
+%	
+%	\caption{\label{fig:figVB} Vascular network 2}
+%\end{figure}
+
+
+
+
+
+
+
+
+%\begin{figure}[h]
+%	\centering
+%	\begin{overpic}[width=0.8\columnwidth]{SimuPlot1}
+%	\end{overpic}
+%	
+%	\caption{\label{fig:SimuPlot1} Particle aggregation in map (a). The violin plot shows the probability density of the simulation data and the black line indicates the mean value. We performed 30 simulations for each combination of methods and swarm populations.}
+%\end{figure}
+%
+%
+%\begin{figure}[h]
+%	\centering
+%	\begin{overpic}[width=0.8\columnwidth]{SimuPlot2}
+%	\end{overpic}
+%	
+%	\caption{\label{fig:SimuPlot2} Particle aggregation in map (b)}
+%\end{figure}
+%
+%\begin{figure}[h]
+%	\centering
+%	\begin{overpic}[width=0.8\columnwidth]{SimuPlot3}
+%	\end{overpic}
+%	
+%	\caption{\label{fig:SimuPlot3} Particle aggregation in map (c)}
+%\end{figure}
+
+
+
+

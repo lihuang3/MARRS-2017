@@ -1,0 +1,190 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%2345678901234567890123456789012345678901234567890123456789012345678901234567890
+%        1         2         3         4         5         6         7         8
+
+\documentclass[letterpaper, 10 pt, conference]{ieeeconf}  % Comment this line out if you need a4paper
+
+%\documentclass[a4paper, 10pt, conference]{ieeeconf}      % Use this line for a4 paper
+
+
+                                                     % you want to use the \thanks command
+\IEEEoverridecommandlockouts                              % This command is only needed if 
+\overrideIEEEmargins                                      % Needed to meet printer requirements.
+
+% See the \addtolength command later in the file to balance the column lengths
+% on the last page of the document
+
+% The following packages can be found on http:\\www.ctan.org
+\let\proof\relax
+\let\endproof\relax
+\usepackage{amsthm}
+\usepackage{graphics} % for pdf, bitmapped graphics files
+\usepackage{epsfig} % for postscript graphics files
+\usepackage{mathptmx} % assumes new font selection scheme installed
+\usepackage{times} % assumes new font selection scheme installed
+\usepackage[cmex10]{amsmath}
+\usepackage{amssymb}  % assumes amsmath package installed
+\usepackage{cite}
+\usepackage{calc}
+\usepackage{url}
+\usepackage{stmaryrd}
+\usepackage{algorithm}
+\usepackage[noend]{algorithmic}
+\usepackage{algorithmicext}
+\usepackage{ifthen}
+\newtheorem{fact}{Fact}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{claim}{Claim}
+\newtheorem{remark}{Remark}
+\newtheorem{definition}{Definition}
+\newtheorem{corollary}{Corollary}
+\newtheorem{proposition}{Proposition}
+\usepackage{boldline}
+\usepackage{makecell}
+\usepackage{afterpage}
+\usepackage{eucal}
+
+\usepackage{cite}
+
+
+
+
+\newcommand\blankpage{%
+	\null
+	\thispagestyle{empty}%
+	\addtocounter{page}{-1}%
+	\newpage}
+
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks =true,
+	urlcolor = black,
+	linkcolor = black
+}
+\usepackage[caption=false,font=footnotesize]{subfig}
+\usepackage{overpic}
+%\usepackage{subfigure}
+%\usepackage{textcomp}
+\graphicspath{{./pictures/}}
+\usepackage[caption=false,font=footnotesize]{subfig}
+\usepackage[usenames, dvipsnames]{color}
+\usepackage{colortbl}
+\newtheorem{prop}{Proposition}
+\newtheorem{rmk}{Remark}
+
+
+\title{\LARGE \bf 
+%Microrobot Swarms Aggregation and Environment Interference with a Global Input 
+%Aggregation of a Microrobot Swarm using a Global Input and Exploiting Environment Interactions
+Path Planning and Aggregation for a Microrobot Swarm in Vascular Networks Using a Global Input 
+}
+
+
+\author{Li Huang and Aaron T. Becker% <-this % stops a space
+\thanks{Li Huang and Aaron T. Becker are with the Department of Electrical and Computer Engineering, University of Houston, Houston, TX 77004, USA
+        {\tt\small lhuang21@uh.edu}}%
+%        Dayton, OH 45435, USA
+%        {\tt\small b.d.researcher@ieee.org}}%
+}
+
+
+\begin{document}
+
+
+
+\maketitle
+\thispagestyle{empty}
+\pagestyle{empty}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{abstract}
+Microrobots have great potential for microassembly and non-invasive surgery applications. %to be used for  micro-electro-mechanical systems (MEMS) and medical applications, such as , etc.  
+%We present efficient strategies for collecting a swarm of simple microrobots in 2D vascular networks using a global input.
+ %These physically preliminary microrobots usually work in large populations, but they have limited capabilities of actuation, computation and communication. 
+%{\color{red}\#}Potential applications of these microrobots require large populations, but individual microrobots have no actuation, computation, or communication capabilities.
+% Therefore, a shared input signal (such as optical signal, gravitational force, or electro-magnetic fields) is employed to provide external actuation and navigation. 
+Motivated by studies proposing MRI-guided drug delivery to tumor cells using magnetic micro carriers, this paper studies two major challenges of this problem: (i) microrobot swarm trajectory generation, and (ii) swarm aggregation using a global input. 
+We propose an augmented RRT for trajectory generation to reduce environment interference, and a divide-and-conquer algorithm for swarm aggregation to improve performance.
+%We propose Trajectory generation of a microrobot swarm is based on an obstacle-weighted RRT algorithm, {\color{red}\#}which gives a path optimized to guide the majority of micro particles from one topological region to another despite  environment interference.
+ %an optimized path with the global control input to reduces environment interference. 
+% The divide-and-conquer aggregation algorithm {\color{red}\#}presented in this paper employs the environment to drive all microrobots to a goal location with a shared input.
+Simulations demonstrate the utility of these approaches in comparison to alternate heuristics. Our trajectory generation and aggregation strategies are implemented on a swarm of ferromagnetic microparticles in oil using a 6-coil electromagnetic system with image feedback. 
+\end{abstract}
+
+%\begin{figure}[h]
+%	\centering
+%	\begin{overpic}[width=0.9\columnwidth]{VasAgg}
+%	\end{overpic}
+%	
+%	\caption{\label{fig:VasAgg} Microrobot swarm path planning and aggregation in a vascular network. The red circle marks the target region of aggregation. Obstacles are shown in blue polygons.}
+%\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{Intro}
+%
+%\input{RelatedWork}
+
+\input{ProbForm}
+%
+\input{Path}
+%
+\input{Aggregation}
+
+\input{Simulation}
+
+\input{Experiment}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{CONCLUSIONS}
+This paper compared two path-planning methods and two control strategies applied to the problem of aggregating microrobot swarms in vascular networks using a global input. 
+Although RRT creates an obstacle-free path from initial locations to a goal for a single robot, this path is not ideal for swarms. 
+We propose an obstacle-weighted RRT that steers microrobots towards near-medial-axis regions to reduce environment interference.   
+A divide-and-conquer strategy is employed to perform swarm-level aggregation via discrete region transitions. 
+Compared to the benchmark strategy, the divide-and-conquer aggregation reduces the task time complexity.    
+%In future work , we plan to augment our research in theory and experiment. 
+%We will prove the convergence of our aggregation algorithms, compare more path planning techniques, test microrobots in different maps and construct a more delicate electromagnetic platform for micro-scale control.
+Future work should prove the convergence of our aggregation algorithms and explore a wider variety of maps.  
+
+\addtolength{\textheight}{-12cm}   % This command serves to balance the column lengths
+                                  % on the last page of the document manually. It shortens
+                                  % the textheight of the last page by a suitable amount.
+                                  % This command does not take effect until the next page
+                                  % so it should come on the page before the last. Make
+                                  % sure that you do not shorten the textheight too much.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\section*{APPENDIX}
+%
+%
+%
+\section*{ACKNOWLEDGMENT}
+%
+%This work was supported by the National Science Foundation under Grant No.\ \href{http://nsf.gov/awardsearch/showAward?AWD_ID=1553063}{ [IIS-1553063]} and \href{http://nsf.gov/awardsearch/showAward?AWD_ID=1619278}{[IIS-1634726]}.% <-this % stops a space
+%This work was supported by the National Science Foundation under Grant No.\  \href{http://nsf.gov/awardsearch/showAward?AWD_ID=1619278}{[IIS-1634726]}
+%and \href{https://www.nsf.gov/awardsearch/showAward?AWD_ID=1634726}{[CMMI-1634726]}
+This work was supported by the National Science Foundation (\href{http://nsf.gov/awardsearch/showAward?AWD_ID=1553063}{ [IIS-1553063]} and \href{http://nsf.gov/awardsearch/showAward?AWD_ID=1619278}{[IIS-1619278]} to A.T.B and
+and [IIS-1734732] and [CMMI-1737682] to M.J.K.).
+
+%This work was support by the National Science Foundation (IIS 1634726 to A.T.B. and IIS 1734732 and CMMI 1737682 to M.J.K.).
+%	This work was supported by the National Science Foundation under Grant No.\ \href{http://nsf.gov/awardsearch/showAward?AWD_ID=1553063}{ [IIS-1553063]} and \href{http://nsf.gov/awardsearch/showAward?AWD_ID=1619278}{[IIS-1619278]}.% <-this % stops a space
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+\bibliographystyle{IEEEtran}
+\bibliography{IEEEabrv,ParticleSwarmRef}
+
+
+
+
+\end{document}

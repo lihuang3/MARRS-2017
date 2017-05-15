@@ -104,7 +104,7 @@ classdef TestObj < handle
          
            this.rank0 = 0;
            
-           for ii = 2:2%numel(this.RegionID)
+           for ii = 6:numel(this.RegionID)
                
                this.rank0 = ii;
                LocalMapProc1(this);
@@ -112,7 +112,7 @@ classdef TestObj < handle
                for jj = 1:numel(row)
                    this.col0 = jj;
                    
-                   for kk = 1:1
+                   for kk = 1:10
                         this.row0 = kk+2; 
                         LocalMapProc1(this,jj,ii);
                    end
@@ -864,7 +864,7 @@ classdef TestObj < handle
            [row, col] = find(this.localSkel==1);
            localPts = [row, col];
            if nargin < 2 
-                this.tar = localPts(2,1:2);
+                this.tar = this.ConnMat(this.RegionID(this.tar_brch_ID),2:3);
                 this.basescore = [];
            else
             
